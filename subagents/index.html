@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Subagents · 互動學習筆記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E7E0CF;
+    --panel:#F3EEE0;
+    --ink:#2A2016;
+    --ink-soft:#6C5D48;
+    --accent:#B14A1C;
+    --accent2:#3B6E6B;
+    --accent2-tint:#DCE7E2;
+    --line:rgba(42,32,22,.15);
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'Noto Sans TC',sans-serif;
+    --disp:'Oswald','Noto Sans TC',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.78}
+  .wrap{max-width:1010px;margin:0 auto;padding:0 22px}
+
+  header{border-bottom:2px solid var(--ink)}
+  .hd{padding:34px 0 26px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+  .eyebrow a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,5vw,48px);line-height:1.14;letter-spacing:.01em}
+  h1 em{font-style:normal;color:var(--accent)}
+  .sub{margin-top:12px;max-width:640px;color:var(--ink-soft);font-size:15px}
+  .stats{display:flex;gap:26px;margin-top:20px;flex-wrap:wrap}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:24px;font-weight:600}
+  .stat span{font-size:11.5px;color:var(--ink-soft)}
+
+  nav.tabs{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabs .wrap{display:flex;gap:4px;padding-top:8px}
+  .tab{font-family:var(--mono);font-size:12.5px;white-space:nowrap;padding:10px 15px 9px;border:1px solid transparent;border-bottom:none;cursor:pointer;background:transparent;color:var(--ink-soft);border-radius:6px 6px 0 0}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:var(--panel);border-color:var(--ink);color:var(--ink);font-weight:600}
+
+  main{padding:36px 0 80px}
+  .page{display:none}
+  .page.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.page.on{animation:none}}
+
+  h2{font-family:var(--disp);font-weight:600;font-size:clamp(22px,3.2vw,30px);margin:6px 0 6px;letter-spacing:.01em}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2)}
+  .lede{color:var(--ink-soft);max-width:660px;font-size:14.5px;margin-bottom:26px}
+
+  .map-card{background:var(--panel);border:1px solid var(--ink);border-radius:10px;padding:24px 22px 8px;margin-bottom:34px}
+  .map-card svg{width:100%;height:auto;display:block}
+  .map-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);text-align:right;padding:6px 4px 10px}
+  .scout-node{cursor:pointer}
+  .scout-node:hover .scout-ring{stroke:var(--accent)}
+
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:36px}
+  .modcard{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:16px;cursor:pointer;text-align:left;font-family:var(--sans);transition:transform .15s ease,box-shadow .15s ease}
+  .modcard:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.10);border-left-color:var(--accent2)}
+  .modcard .secid{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent)}
+  .modcard h3{font-size:16.5px;font-weight:700;margin:4px 0 6px}
+  .modcard p{font-size:13px;color:var(--ink-soft);line-height:1.62}
+  .modcard .cnt{font-family:var(--mono);font-size:11px;color:var(--accent2);margin-top:10px;display:block}
+
+  .howto{background:var(--accent2-tint);border:1px dashed var(--accent2);border-radius:8px;padding:18px 20px;font-size:14px;margin-bottom:10px}
+  .howto ol{margin:8px 0 0 20px}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(0,0,0,.07);padding:1px 5px;border-radius:4px}
+
+  .lesson{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;overflow:hidden}
+  .lesson-hd{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;cursor:pointer}
+  .lesson-hd:hover{background:rgba(0,0,0,.03)}
+  .lswitch{margin-top:5px;width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+  .ltitle{flex:1}
+  .ltitle .en{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  .ltitle .zh{font-size:16px;font-weight:700}
+  .ltitle .mins{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .chip{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:99px;flex-shrink:0;margin-top:4px}
+  .chip.todo{background:rgba(0,0,0,.08);color:var(--ink-soft)}
+  .chip.done{background:var(--accent);color:#fff}
+  .lesson-bd{border-top:1px dashed var(--line);padding:14px 18px 16px;display:none;font-size:14px}
+  .lesson.open .lesson-bd{display:block}
+  .arr{margin-left:auto;font-family:var(--mono);color:var(--ink-soft);margin-top:4px}
+
+  .note{font-size:14px}
+  .note .big{font-size:14.5px;background:var(--accent2-tint);border-left:3px solid var(--accent2);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px}
+  .note h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin:16px 0 6px}
+  .note details{border:1px solid var(--line);border-radius:6px;margin-bottom:8px;background:#fff;overflow:hidden}
+  .note summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:baseline}
+  .note summary::-webkit-details-marker{display:none}
+  .note summary::before{content:"\25B8";font-family:var(--mono);color:var(--accent);transition:transform .15s}
+  .note details[open] summary::before{transform:rotate(90deg)}
+  .note summary .when{font-size:12px;color:var(--ink-soft);font-weight:400;margin-left:auto;text-align:right;flex-shrink:0}
+  .note .dbody{padding:10px 14px 12px;border-top:1px dashed var(--line)}
+  .note table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  .note th,.note td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  .note th{background:rgba(0,0,0,.05);font-family:var(--mono);font-size:12px}
+  .note .cmd{display:block;font-family:var(--mono);font-size:12.5px;background:var(--ink);color:#EEE;padding:8px 12px;border-radius:6px;margin:8px 0;overflow-x:auto;line-height:1.7}
+  .note .flow{margin:10px 0 4px;counter-reset:step}
+  .note .fstep{position:relative;padding:0 0 16px 30px;border-left:2px dashed var(--accent);margin-left:11px}
+  .note .fstep:last-child{border-left-color:transparent;padding-bottom:4px}
+  .note .fstep::before{counter-increment:step;content:counter(step);position:absolute;left:-12px;top:0;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+  .note .fstep b{display:block}
+  .note .tip{background:var(--accent2-tint);border-radius:6px;padding:9px 13px;font-size:13px;margin:10px 0}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:12.5px;color:var(--ink-soft)}
+  footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="eyebrow">Anthropic Academy · 個人學習筆記（非官方） · 原課程：<a href="https://anthropic.skilljar.com/introduction-to-subagents/450698" target="_blank" rel="noopener">Introduction to Subagents</a></div>
+    <h1>把找答案的<em>過程</em>，擋在營地外</h1>
+    <p class="sub">Subagent 就是你派進地形裡的斥候：帶著自己的行囊與任務單出去，跑完只交回一份簡報，沿途翻過的每一份檔案留在它的脈絡裡。這門課教你何時派斥候、怎麼組、怎麼設計、以及什麼時候別派。本站把 4 課拆成「建立」與「運用」兩座營地。</p>
+    <div class="stats">
+      <div class="stat"><b>2</b><span>模組</span></div>
+      <div class="stat"><b>4</b><span>課程</span></div>
+      <div class="stat"><b id="stat-done">0</b><span>已完成</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="頁籤">
+  <div class="wrap">
+    <button class="tab on" data-page="home">派遣地圖</button>
+    <button class="tab" data-page="m1">01 建立斥候</button>
+    <button class="tab" data-page="m2">02 運用斥候</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="page on" id="page-home">
+    <div class="kicker">Field Map · 斥候派遣圖</div>
+    <h2>一次委派，長什麼樣子</h2>
+    <p class="lede">主線程是大本營，它要什麼結果就派一支斥候出去。斥候在自己的加壓艙（獨立脈絡窗）裡讀檔、搜尋、跑工具——這些噪音都不會倒回營地；它回來只交一張簡報。點地圖上的節點可以跳到對應模組。</p>
+
+    <div class="map-card">
+      <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="大本營派遣四名斥候的示意圖">
+        <!-- 等高線背景 -->
+        <g fill="none" stroke="#2A2016" stroke-opacity=".08">
+          <ellipse cx="560" cy="150" rx="300" ry="120"/>
+          <ellipse cx="560" cy="150" rx="230" ry="90"/>
+          <ellipse cx="560" cy="150" rx="160" ry="62"/>
+        </g>
+
+        <!-- 派遣路線（燒橙虛線，出營） -->
+        <g stroke="#B14A1C" stroke-width="2" fill="none" stroke-dasharray="6 6" opacity=".85">
+          <path d="M205 130 C300 95, 340 80, 388 74"/>
+          <path d="M205 138 C330 120, 470 100, 592 92"/>
+          <path d="M205 162 C330 180, 470 200, 592 210"/>
+          <path d="M205 170 C300 205, 340 220, 388 228"/>
+        </g>
+
+        <!-- 回傳簡報（田野青，回營） -->
+        <g stroke="#3B6E6B" stroke-width="1.6" fill="none" marker-end="url(#rpt)">
+          <path d="M388 92 C300 130, 260 140, 214 150"/>
+        </g>
+        <defs>
+          <marker id="rpt" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="#3B6E6B"/>
+          </marker>
+        </defs>
+
+        <!-- 大本營 -->
+        <g>
+          <rect x="46" y="112" width="160" height="76" rx="9" fill="#F3EEE0" stroke="#2A2016" stroke-width="2"/>
+          <path d="M126 88 L126 112" stroke="#2A2016" stroke-width="2"/>
+          <path d="M126 88 L156 98 L126 106 z" fill="#B14A1C"/>
+          <text x="126" y="146" text-anchor="middle" font-family="Oswald,sans-serif" font-size="17" font-weight="600" fill="#2A2016">主線程</text>
+          <text x="126" y="168" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10.5" fill="#6C5D48">BASE CAMP · 大本營</text>
+        </g>
+
+        <!-- 斥候節點 -->
+        <g class="scout-node" data-page="m1">
+          <circle class="scout-ring" cx="388" cy="74" r="26" fill="#F3EEE0" stroke="#3B6E6B" stroke-width="2"/>
+          <text x="388" y="79" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="#2A2016">1</text>
+          <text x="388" y="34" text-anchor="middle" font-family="Noto Sans TC,sans-serif" font-size="12.5" font-weight="700" fill="#2A2016">認識斥候</text>
+        </g>
+        <g class="scout-node" data-page="m1">
+          <circle class="scout-ring" cx="618" cy="92" r="26" fill="#F3EEE0" stroke="#3B6E6B" stroke-width="2"/>
+          <text x="618" y="97" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="#2A2016">2</text>
+          <text x="618" y="52" text-anchor="middle" font-family="Noto Sans TC,sans-serif" font-size="12.5" font-weight="700" fill="#2A2016">組建斥候</text>
+        </g>
+        <g class="scout-node" data-page="m2">
+          <circle class="scout-ring" cx="618" cy="210" r="26" fill="#F3EEE0" stroke="#3B6E6B" stroke-width="2"/>
+          <text x="618" y="215" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="#2A2016">3</text>
+          <text x="618" y="258" text-anchor="middle" font-family="Noto Sans TC,sans-serif" font-size="12.5" font-weight="700" fill="#2A2016">設計得管用</text>
+        </g>
+        <g class="scout-node" data-page="m2">
+          <circle class="scout-ring" cx="388" cy="228" r="26" fill="#F3EEE0" stroke="#3B6E6B" stroke-width="2"/>
+          <text x="388" y="233" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="15" fill="#2A2016">4</text>
+          <text x="388" y="272" text-anchor="middle" font-family="Noto Sans TC,sans-serif" font-size="12.5" font-weight="700" fill="#2A2016">何時該派</text>
+        </g>
+
+        <!-- 簡報卡示意 -->
+        <g transform="translate(250,120)">
+          <rect x="0" y="0" width="34" height="26" rx="3" fill="#fff" stroke="#3B6E6B" stroke-width="1.6"/>
+          <line x1="6" y1="8" x2="28" y2="8" stroke="#3B6E6B" stroke-width="1.4"/>
+          <line x1="6" y1="14" x2="28" y2="14" stroke="#3B6E6B" stroke-width="1.4"/>
+          <line x1="6" y1="20" x2="20" y2="20" stroke="#3B6E6B" stroke-width="1.4"/>
+        </g>
+        <text x="267" y="164" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9.5" fill="#3B6E6B">回傳：一份簡報</text>
+      </svg>
+      <div class="map-note">燒橙虛線＝派遣任務 · 青色箭頭＝只回傳摘要 · 沿途噪音留在斥候脈絡裡</div>
+    </div>
+
+    <div class="kicker">Modules · 點卡片進入模組</div>
+    <h2 style="margin-bottom:16px">兩座營地</h2>
+    <div class="mods">
+      <button class="modcard" data-page="m1">
+        <span class="secid">01</span><h3>建立斥候</h3><p>斥候是什麼、幫你擋掉什麼；用 /agents 指令實際組一支出來，搞懂 scope、工具、model、config 檔。</p>
+        <span class="cnt">2 課 · 認識 → 組建</span>
+      </button>
+      <button class="modcard" data-page="m2">
+        <span class="secid">02</span><h3>運用斥候</h3><p>讓斥候真的管用的四要素，以及最關鍵的一題：這任務到底該不該派？附三個常見反模式。</p>
+        <span class="cnt">2 課 · 設計 → 時機</span>
+      </button>
+    </div>
+
+    <div class="howto">
+      <b>🧭 這個站怎麼用</b>
+      <ol>
+        <li>每上完一課，回來點開對應的斥候卡、勾右上角「完成」，上方進度會即時累加。</li>
+        <li>想邊讀邊練：照第 2 課的 <code>/agents</code> 步驟，真的組一支斥候出來測。</li>
+        <li>之後補課或想加「弱點回顧」，把新內容交給 Claude，會用同一套版型續填。</li>
+        <li>這門課目前沒有測驗；若日後加了，可另開一張佔位卡。</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="page" id="page-m1"></section>
+  <section class="page" id="page-m2"></section>
+</main>
+
+<footer>
+  <div class="wrap">
+    互動學習筆記 · 個人整理，非官方內容，如有出入請以原課程為準。<br>
+    來源：<a href="https://anthropic.skilljar.com/introduction-to-subagents/450698" target="_blank" rel="noopener">Introduction to Subagents — Anthropic Academy</a>
+  </div>
+</footer>
+
+<script>
+/* 每課筆記：const 字串。內容嚴禁反引號與 ${ ！ */
+
+const NOTE_L1 = `
+<div class="note">
+  <div class="big">🧭 <b>一句話抓住這課：</b>斥候幫你把「找答案的過程」擋在營地外——主線程只收一份結論，不收沿途翻過的每一份檔案。</div>
+
+  <h4>斥候到底是什麼</h4>
+  <details><summary>一次委派的生命週期<span class="when">先建立整體圖像</span></summary>
+    <div class="dbody">
+      斥候（subagent）是 Claude Code 可以把任務外包出去的專門助手。它拿到兩樣東西就出發：一份來自設定檔的<b>自訂 system prompt</b>（定義它的角色與行為）、一份主線程依你需求寫的<b>任務描述</b>。然後它在自己的脈絡窗裡自己跑——讀檔、搜尋、改 code，全在艙內。做完只有一份<b>摘要</b>回到主對話，整段斥候對話隨即丟棄。
+    </div></details>
+
+  <div class="flow">
+    <div class="fstep"><b>主線程寫任務單</b>依你的需求，把要查什麼交代給斥候。</div>
+    <div class="fstep"><b>斥候另開脈絡窗</b>帶著自訂 system prompt 出發，跟主對話完全隔離。</div>
+    <div class="fstep"><b>在艙內幹活</b>讀 15 個檔、跑好幾次搜尋、追函式呼叫——噪音全留在它自己那邊。</div>
+    <div class="fstep"><b>只回傳摘要</b>主線程只收到「你要的那一個事實」，例如某驗證發生在哪個檔第幾行。</div>
+    <div class="fstep"><b>對話丟棄</b>斥候的完整過程用完即拋，主脈絡保持乾淨。</div>
+  </div>
+
+  <h4>為什麼值得這樣做</h4>
+  <details><summary>它解決的問題、以及代價<span class="when">權衡清楚再用</span></summary>
+    <div class="dbody">
+      你每跟 Claude Code 講一句話、每次工具呼叫、每份讀進來的檔，都堆進<b>有限的</b>主脈絡窗；塞爆之後，Claude 會開始遺失前面的內容。斥候另開一個脈絡窗，把探索的雜訊隔在外面，讓你的主線能撐得更久、更有效。<br>
+      代價只有一個，但要記住：<b>你失去了對「它怎麼得到結論」的能見度</b>——只拿得到摘要，看不到它的每一步。
+    </div></details>
+
+  <h4>內建的三種斥候</h4>
+  <table>
+    <tr><th>內建斥候</th><th>擅長</th></tr>
+    <tr><td>General purpose</td><td>需要「探索＋動手」兼具的多步驟任務</td></tr>
+    <tr><td>Explore</td><td>在陌生 codebase 裡快速搜尋與導覽</td></tr>
+    <tr><td>Plan</td><td>plan 模式下先研究分析，再提出計畫</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--ink-soft);margin-top:6px">除了內建的，你也能自訂帶專屬 system prompt 與工具權限的斥候——code reviewer、test writer、文件產生器都行（下一課實作）。</p>
+
+  <div class="tip">🛰 <b>套到你的工作：</b>做 IATA 月報摘取時，整份報告一貼進來，主對話很快被塞滿。可以想成派一個「報告斥候」進去，只帶回你要的四個維度（燃油成本／需求航線／財務／企業策略）結構化重點，原文與檢索噪音留在它的脈絡裡，主線保持清爽。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 斥候會回傳什麼、不回傳什麼？</summary><div class="dbody">回傳一份精簡<b>摘要</b>（你要的結果）；不回傳它讀過的每個檔、每次搜尋、每一步過程——那些用完即丟。</div></details>
+  <details><summary>Q2 · 用斥候唯一要付的代價是什麼？</summary><div class="dbody">失去對「它如何得到答案」的能見度。當過程本身你需要看，就別外包。</div></details>
+</div>
+`;
+
+const NOTE_L2 = `
+<div class="note">
+  <div class="big">🧭 <b>一句話抓住這課：</b>一個斥候就是一個帶 YAML 開頭的 markdown 檔；用 <code>/agents</code> 讓 Claude 幫你生，描述決定它何時被叫、正文是它的行動守則。</div>
+
+  <h4>動手組一支：/agents 流程</h4>
+  <div class="flow">
+    <div class="fstep"><b>輸入 /agents</b>打開管理斥候的主介面，選 Create new agent。</div>
+    <div class="fstep"><b>選 scope</b>Project-level（只在這個專案）或 User-level（這台機器所有專案共用）。</div>
+    <div class="fstep"><b>讓 Claude 生成</b>可以手寫，但建議直接描述你要它做什麼，Claude 幫你產出 name、description、system prompt。</div>
+    <div class="fstep"><b>挑工具</b>從五類裡勾它真正需要的（下方表）。</div>
+    <div class="fstep"><b>選 model 與顏色</b>顏色只是 UI 上好辨識，多個斥候同時跑時很有用。</div>
+    <div class="fstep"><b>存檔</b>完成後 config 存到專案，通常在 .claude/agents/你的斥候名.md。</div>
+  </div>
+
+  <h4>工具類別 · 只給需要的</h4>
+  <details><summary>五類工具，按需授權<span class="when">建立時可勾選</span></summary>
+    <div class="dbody">
+      Read-only、Edit、Execution、MCP、Other。先想這支斥候實際要做什麼：一個 code reviewer 多半<b>不需要 edit</b>（它該讀與分析，不該改），但保留 execution 讓它能看到有哪些待處理的變更。
+    </div></details>
+
+  <h4>選哪個 model</h4>
+  <table>
+    <tr><th>選項</th><th>適合</th></tr>
+    <tr><td>Haiku</td><td>快、輕量的任務</td></tr>
+    <tr><td>Sonnet</td><td>速度與深度的中間值</td></tr>
+    <tr><td>Opus</td><td>複雜分析</td></tr>
+    <tr><td>Inherit</td><td>跟你主對話用同一個 model</td></tr>
+  </table>
+
+  <h4>config 檔長這樣</h4>
+  <details><summary>frontmatter 五個欄位<span class="when">存檔後可隨時手改</span></summary>
+    <div class="dbody">
+      YAML 開頭之後的正文，就是這支斥候的 system prompt。
+      <span class="cmd">--- <br>name: code-quality-reviewer <br>description: 何時該叫這支斥候（單行；可放範例對話） <br>tools: Bash, Glob, Grep, Read <br>model: sonnet <br>color: purple <br>---<br>（以下正文＝system prompt：要它看什麼、怎麼分析、怎麼回報）</span>
+      <table>
+        <tr><th>欄位</th><th>作用</th></tr>
+        <tr><td>name</td><td>唯一識別，用 @agent 名字 直接點名它</td></tr>
+        <tr><td>description</td><td>決定 Claude 何時自動用它；<b>必須單行</b>，需要斷行用跳脫字元</td></tr>
+        <tr><td>tools</td><td>它能碰哪些工具，可隨時手改</td></tr>
+        <tr><td>model</td><td>sonnet／opus／haiku／inherit</td></tr>
+        <tr><td>color</td><td>UI 辨識色</td></tr>
+      </table>
+    </div></details>
+
+  <h4>讓 Claude 自動派它</h4>
+  <details><summary>兩個開關：proactively ＋ 範例<span class="when">不想每次手動點名時</span></summary>
+    <div class="dbody">
+      想讓 Claude 不用你明講就自動委派，在 description 放進「proactively」這個字（例：Proactively suggest running this agent after major code changes）。再加上具體的<b>範例對話</b>，Claude 越懂什麼情境該派，判斷越準。</div></details>
+
+  <div class="tip">🛰 <b>套到你的工作：</b>arialifetalk 的命理文案，可以組一支「文案斥候」：正文寫死你的語氣、目標受眾、禁用詞、CTA 導向（BaZi 計算機／Unload）。之後每次派它寫貼文都自帶這套聲音，不必每次重講一遍。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · Project-level 和 User-level 差在哪？</summary><div class="dbody">Project-level 只在目前這個專案可用；User-level 在這台機器的所有專案共用。</div></details>
+  <details><summary>Q2 · 要讓 Claude 自動用你的斥候，description 裡要放什麼？</summary><div class="dbody">放「proactively」這個字，再附上具體的範例對話，幫 Claude 判斷何時該委派。</div></details>
+</div>
+`;
+
+const NOTE_L3 = `
+<div class="note">
+  <div class="big">🧭 <b>一句話抓住這課：</b>好斥候＝四件事——描述夠具體、定義輸出格式、回報障礙、限制工具；其中<b>「定義輸出格式」投報率最高</b>。</div>
+
+  <h4>四要素總表</h4>
+  <table>
+    <tr><th>要素</th><th>解決什麼</th></tr>
+    <tr><td>具體的描述</td><td>控制它何時被叫、也塑造它收到的任務單</td></tr>
+    <tr><td>定義輸出格式</td><td>給停止點、防止它跑太久</td></tr>
+    <tr><td>回報障礙</td><td>把 workaround 帶回來，主線程不用重踩</td></tr>
+    <tr><td>限制工具</td><td>避免誤動、讓角色更清楚</td></tr>
+  </table>
+
+  <h4>描述不只決定「何時」，還決定「怎麼被交代」</h4>
+  <details><summary>描述會被拿去寫任務單<span class="when">最容易被忽略的一環</span></summary>
+    <div class="dbody">
+      每次你發訊息，所有可用斥候的 name 與 description 都被放進主線程的 system prompt——這是主線程判斷「該叫哪支、何時叫」的依據。但 description 還有第二個作用：主線程<b>拿它當範本去寫啟動斥候的輸入提示</b>。<br>
+      舉例：描述很籠統時，主線程可能寫出「用 get diff 找出目前的變更」這種模糊任務單，斥候得自己猜哪些檔重要。若把描述改成「你必須明確告訴這支斥候要審哪些檔案」，主線程就會寫出點名實際檔案的具體任務單。同理，在網搜斥候的描述加「回傳可引用的來源」，主線程委派時就會自動帶上這條。
+    </div></details>
+
+  <h4>為什麼「輸出格式」是投報率最高的一步</h4>
+  <details><summary>它同時做兩件事<span class="when">只做一件也要做這件</span></summary>
+    <div class="dbody">
+      ①<b>製造自然的停止點</b>——每一段填完，斥候就知道自己做完了。<br>
+      ②<b>防止跑太久</b>——沒有明確輸出時，斥候很難判斷「研究到什麼程度算夠」，往往跑得比需要的久。<br>
+      作法就是在 system prompt 裡給它一份結構化清單（例如 code review：摘要／嚴重問題／主要問題／次要問題／建議／核可狀態），每格填完即停。
+    </div></details>
+
+  <h4>把障礙一起帶回來</h4>
+  <details><summary>加一段「Obstacles Encountered」<span class="when">省下重複踩雷</span></summary>
+    <div class="dbody">
+      斥候途中若解決了相依套件問題、發現某指令要加特定旗標，這些若沒寫進摘要，主線程就得自己重新發現一次，白白燒時間與 token。要它交出來的方法很簡單：<b>在輸出格式裡明訂一段「遇到的障礙」</b>——把環境怪癖、workaround、需要特殊旗標的指令、卡住的相依都列進去。
+    </div></details>
+
+  <h4>工具權限：按角色給</h4>
+  <table>
+    <tr><th>斥候類型</th><th>給的工具</th></tr>
+    <tr><td>研究／唯讀</td><td>只要 Glob、Grep、Read；不可能誤改檔</td></tr>
+    <tr><td>code reviewer</td><td>加 Bash 好跑 git diff 看變更；仍不需 Edit／Write</td></tr>
+    <tr><td>樣式／改 code</td><td>這種才給 Edit、Write，因為它的工作就是動你的 code</td></tr>
+  </table>
+
+  <div class="tip">🛰 <b>套到你的工作：</b>如果把某段收益預測外包給斥候，最該先定的就是<b>輸出格式</b>——例如固定回「關鍵假設／敏感度／風險項／一句話結論」四段。它一看就知道做到哪算完，不會在資料裡漫遊。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 投報率最高的單一改善是什麼？為什麼？</summary><div class="dbody">在 system prompt 定義輸出格式。它給了停止點、也防止斥候跑過頭。</div></details>
+  <details><summary>Q2 · code reviewer 該給、不該給哪些工具？</summary><div class="dbody">給 Read 類與 Bash（跑 git diff）；不給 Edit／Write——它該審不該改。</div></details>
+</div>
+`;
+
+const NOTE_L4 = `
+<div class="note">
+  <div class="big">🧭 <b>一句話抓住這課：</b>一個判準就夠了——<b>過程重不重要？</b>只要結果就派斥候；要邊看邊反應就留在主線程。</div>
+
+  <h4>斥候發光的場景</h4>
+  <details><summary>探索與執行分得開的時候<span class="when">該派</span></summary>
+    <div class="dbody">
+      當每一步都<b>依賴上一步的發現</b>，那工作該留在主線程；但當你只要一個答案、不在乎沿途歷程，就外包。三個經典場景：<br>
+      ①<b>研究</b>——在陌生 codebase 查「驗證怎麼運作」，主線程只要「JWT 在 middleware/auth.js 第 42 行驗」這個結果，不需要看它翻過的每個檔。<br>
+      ②<b>code review</b>——見下。<br>
+      ③<b>需要自訂 system prompt</b>——文案斥候（語氣、受眾、風格跟預設的簡潔技術腔完全不同）、樣式斥候（指向你的設計系統檔，跑起來自動載入色票與間距慣例）。
+    </div></details>
+
+  <details><summary>為什麼 code review 特別適合外包<span class="when">值得單獨記</span></summary>
+    <div class="dbody">
+      Claude 審「別人寫的」code 時給的回饋更犀利。若某功能是你跟主線程一路寫出來的，再叫同一條線去審，往往看不出問題——它參與了創作，很難用新的眼睛看。丟給獨立脈絡的 reviewer 斥候：它跑 git diff、讀改過的檔、套用它專屬的審查標準，不帶「這是我怎麼寫出來的」包袱；還能把團隊的審查規範寫進它的 system prompt，讓標準一致。
+    </div></details>
+
+  <h4>三個反模式（別派）</h4>
+  <table>
+    <tr><th>反模式</th><th>為什麼沒用／有害</th></tr>
+    <tr><td>專家人設</td><td>「你是 Python 專家」這類加不了值——Claude 本來就有那知識，主線程自己就能做。</td></tr>
+    <tr><td>順序管線</td><td>一支重現 bug、一支 debug、一支修——每步都依賴上一步時，交接會掉資訊。bug 修復幾乎總是這樣。</td></tr>
+    <tr><td>test runner</td><td>測試失敗時你要完整輸出來診斷，它卻只回「測試失敗」，逼你再寫 debug script 去撈細節。實測中這個模式表現最差。</td></tr>
+  </table>
+
+  <h4>決策法則</h4>
+  <div class="flow">
+    <div class="fstep"><b>問一句：過程重要嗎？</b>你需不需要看到、並對沿途發生的事即時反應？</div>
+    <div class="fstep"><b>答「否」→ 派</b>你只要最終結果，交給斥候。</div>
+    <div class="fstep"><b>答「是」→ 留</b>留在主線程，自己邊做邊看。</div>
+  </div>
+
+  <div class="tip">🛰 <b>套到你的工作：</b>你的分析常是「查完 A 才知道下一步要查 B」那種鏈式的——別拆給斥候，交接會掉資訊。反而像「給我這條航線過去三年的載客率」這種只要結果、不在乎它怎麼撈的，最適合外包。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 一句話講出決策法則</summary><div class="dbody">過程重要就留在主線程，只要結果就派斥候。</div></details>
+  <details><summary>Q2 · 為什麼順序管線常失敗？</summary><div class="dbody">當每一步依賴上一步的發現時，資訊會在斥候之間的交接中遺失；bug 修復幾乎都屬於這種。</div></details>
+  <details><summary>Q3 · test runner 反模式錯在哪？</summary><div class="dbody">它把你 debug 需要的完整輸出藏起來，只回「失敗」，反而逼你多做工去撈細節。</div></details>
+</div>
+`;
+
+const PLACEHOLDER = `⏳ <b>待填入</b> — 上完這課後把內容交給 Claude 生成互動筆記段落，替換此區塊。`;
+
+const MODULES = {
+  m1: {
+    sec: "01 · BUILD", zh: "建立斥候",
+    lede: "先搞懂斥候幫你擋掉什麼，再實際用 /agents 組一支出來——scope、工具、model、config 檔一次到位。",
+    lessons: [
+      { en:"What are subagents?", zh:"認識斥候：獨立脈絡與只回傳摘要", mins:"約 5 分鐘", notes: NOTE_L1 },
+      { en:"Creating a subagent", zh:"組建斥候：/agents 與 config 檔", mins:"約 6 分鐘", notes: NOTE_L2 },
+    ]
+  },
+  m2: {
+    sec: "02 · DEPLOY", zh: "運用斥候",
+    lede: "讓斥候真正管用的四要素，以及那一題決定成敗的判準：這任務到底該不該派。",
+    lessons: [
+      { en:"Designing effective subagents", zh:"設計得管用：四要素", mins:"約 6 分鐘", notes: NOTE_L3 },
+      { en:"Using subagents effectively", zh:"何時該派、何時別派", mins:"約 5 分鐘", notes: NOTE_L4 },
+    ]
+  },
+};
+
+for (const [id, m] of Object.entries(MODULES)) {
+  const page = document.getElementById("page-" + id);
+  if(!page) continue;
+  page.innerHTML = `
+    <div class="kicker">${m.sec}</div>
+    <h2>${m.zh}</h2>
+    <p class="lede">${m.lede}</p>
+    ${m.lessons.map((l,i)=>`
+      <div class="lesson" id="${id}-l${i}">
+        <div class="lesson-hd" data-toggle="${id}-l${i}">
+          <input type="checkbox" class="lswitch" data-done="${id}-l${i}" aria-label="標記完成" onclick="event.stopPropagation()">
+          <div class="ltitle">
+            <div class="en">${l.en}</div>
+            <div class="zh">${l.zh}</div>
+            ${l.mins ? `<div class="mins">⏱ ${l.mins}</div>` : ``}
+          </div>
+          <span class="chip todo" id="chip-${id}-l${i}">待學習</span>
+          <span class="arr">▾</span>
+        </div>
+        <div class="lesson-bd">${l.notes || `<div class="tip">${PLACEHOLDER}</div>`}</div>
+      </div>`).join("")}
+  `;
+}
+
+function goto(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.page===id));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("on", p.id==="page-"+id));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("[data-page]").forEach(el=>{
+  el.addEventListener("click", ()=>goto(el.dataset.page));
+});
+document.addEventListener("click", e=>{
+  const hd = e.target.closest(".lesson-hd");
+  if(hd) document.getElementById(hd.dataset.toggle).classList.toggle("open");
+});
+
+let done = 0;
+document.addEventListener("change", e=>{
+  if(!e.target.matches("[data-done]")) return;
+  const chip = document.getElementById("chip-" + e.target.dataset.done);
+  const on = e.target.checked;
+  chip.textContent = on ? "已完成" : "待學習";
+  chip.className = "chip " + (on ? "done" : "todo");
+  done += on ? 1 : -1;
+  document.getElementById("stat-done").textContent = done;
+});
+</script>
+</body>
+</html>
