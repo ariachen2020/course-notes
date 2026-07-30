@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Fluency for Small Businesses · 互動學習筆記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2E9;
+    --panel:#FDFBF5;
+    --ink:#2B241C;
+    --ink-soft:#6B6053;
+    --green:#2F6B4F;
+    --green-tint:#E3EDE5;
+    --gold:#D9971E;
+    --gold-tint:#F6E8CB;
+    --line:rgba(43,36,28,.16);
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'Noto Sans TC',sans-serif;
+    --disp:'Fraunces','Noto Sans TC',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.8}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+
+  header{border-bottom:3px double var(--ink);background:var(--paper)}
+  .hd{padding:36px 0 28px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:10px}
+  .eyebrow a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--green)}
+  h1{font-family:var(--disp);font-weight:900;font-size:clamp(30px,5vw,48px);line-height:1.15;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--green)}
+  .sub{margin-top:12px;max-width:640px;color:var(--ink-soft);font-size:15px}
+  .stats{display:flex;gap:26px;margin-top:20px;flex-wrap:wrap}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:24px;font-weight:600}
+  .stat span{font-size:11.5px;letter-spacing:.08em;color:var(--ink-soft)}
+
+  nav.tabs{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabs .wrap{display:flex;gap:4px;padding-top:8px}
+  .tab{font-family:var(--mono);font-size:12.5px;white-space:nowrap;padding:10px 14px 9px;border:1px solid transparent;border-bottom:none;cursor:pointer;background:transparent;color:var(--ink-soft);border-radius:6px 6px 0 0}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:var(--panel);border-color:var(--ink);color:var(--ink);font-weight:600}
+
+  main{padding:36px 0 80px}
+  .page{display:none}
+  .page.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.page.on{animation:none}}
+
+  h2{font-family:var(--disp);font-weight:900;font-size:clamp(22px,3.2vw,30px);margin:6px 0 6px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-top:4px}
+  .lede{color:var(--ink-soft);max-width:660px;font-size:14.5px;margin-bottom:26px}
+
+  .loop-card{background:var(--panel);border:1px solid var(--ink);border-radius:12px;padding:24px 18px 8px;margin-bottom:34px}
+  .loop-svg{width:100%;height:auto;display:block}
+  .loop-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);text-align:right;padding:6px 4px 10px}
+
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:36px}
+  .modcard{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--green);border-radius:8px;padding:16px;cursor:pointer;text-align:left;font-family:var(--sans);transition:transform .15s ease,box-shadow .15s ease}
+  .modcard:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(43,36,28,.10);border-top-color:var(--gold)}
+  .modcard .secid{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--green)}
+  .modcard h3{font-family:var(--disp);font-size:17px;font-weight:700;margin:4px 0 6px}
+  .modcard p{font-size:13px;color:var(--ink-soft);line-height:1.65}
+  .modcard .cnt{font-family:var(--mono);font-size:11px;color:var(--gold);margin-top:10px;display:block}
+
+  .howto{background:var(--gold-tint);border:1px dashed var(--gold);border-radius:8px;padding:18px 20px;font-size:14px;margin-bottom:10px}
+  .howto ol{margin:8px 0 0 20px}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(43,36,28,.07);padding:1px 5px;border-radius:4px}
+
+  .lesson{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;overflow:hidden}
+  .lesson-hd{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;cursor:pointer}
+  .lesson-hd:hover{background:rgba(47,107,79,.05)}
+  .lswitch{margin-top:5px;width:15px;height:15px;accent-color:var(--green);cursor:pointer;flex-shrink:0}
+  .ltitle{flex:1}
+  .ltitle .en{font-family:var(--mono);font-size:12px;color:var(--green)}
+  .ltitle .zh{font-size:16px;font-weight:700}
+  .ltitle .mins{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .chip{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:99px;flex-shrink:0;margin-top:4px}
+  .chip.todo{background:rgba(43,36,28,.08);color:var(--ink-soft)}
+  .chip.done{background:var(--green);color:#fff}
+  .lesson-bd{border-top:1px dashed var(--line);padding:14px 18px 16px;display:none;font-size:14px}
+  .lesson.open .lesson-bd{display:block}
+  .arr{margin-left:auto;font-family:var(--mono);color:var(--ink-soft);margin-top:4px}
+
+  .note{font-size:14px}
+  .note .big{font-size:14.5px;background:var(--green-tint);border-left:3px solid var(--green);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px}
+  .note h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:16px 0 6px}
+  .note details{border:1px solid var(--line);border-radius:6px;margin-bottom:8px;background:#fff;overflow:hidden}
+  .note summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:baseline}
+  .note summary::-webkit-details-marker{display:none}
+  .note summary::before{content:"▸";font-family:var(--mono);color:var(--green);transition:transform .15s}
+  .note details[open] summary::before{transform:rotate(90deg)}
+  .note summary .when{font-size:12px;color:var(--ink-soft);font-weight:400;margin-left:auto;text-align:right;flex-shrink:0}
+  .note .dbody{padding:10px 14px 12px;border-top:1px dashed var(--line)}
+  .note table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  .note th,.note td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  .note th{background:var(--green-tint);font-family:var(--mono);font-size:12px}
+  .note .flow{margin:10px 0 4px;counter-reset:step}
+  .note .fstep{position:relative;padding:0 0 16px 30px;border-left:2px dashed var(--green);margin-left:11px}
+  .note .fstep:last-child{border-left-color:transparent;padding-bottom:4px}
+  .note .fstep::before{counter-increment:step;content:counter(step);position:absolute;left:-12px;top:0;width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+  .note .fstep b{display:block}
+  .note .tip{background:var(--gold-tint);border-radius:6px;padding:9px 13px;font-size:13px;margin:10px 0}
+
+  /* Markov widget */
+  .mkv{border:1px solid var(--ink);border-radius:8px;background:#fff;padding:14px 16px;margin:10px 0}
+  .mkv .sent{font-size:16px;min-height:32px;padding:8px 10px;background:var(--paper);border-radius:6px;margin-bottom:10px}
+  .mkv .sent .cursor{color:var(--gold);animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .mkv .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .mkv button{font-family:var(--sans);font-size:14px;padding:7px 12px;border:1px solid var(--green);background:var(--green-tint);color:var(--ink);border-radius:6px;cursor:pointer}
+  .mkv button:hover{background:var(--green);color:#fff}
+  .mkv button small{font-family:var(--mono);font-size:10.5px;opacity:.75;margin-left:5px}
+  .mkv .mkv-reset{border-color:var(--ink-soft);background:transparent;color:var(--ink-soft)}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:12.5px;color:var(--ink-soft)}
+  footer a{color:var(--green)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="eyebrow">Anthropic Academy · 個人學習筆記（非官方） · 原課程：<a href="https://anthropic.skilljar.com/ai-fluency-for-small-businesses" target="_blank" rel="noopener">AI Fluency for Small Businesses</a></div>
+    <h1>把 AI 用得<em>流利</em>，<br>像經營一間好店那樣</h1>
+    <p class="sub">AI Fluency＝有效率、有效果、合乎倫理、安全地使用 AI 的能力。這門課用 4D Framework 和兩個實踐迴圈，教小事業主把 AI 織進日常營運——而且每一課的練習都拿你自己的生意當材料。</p>
+    <div class="stats">
+      <div class="stat"><b>6</b><span>章節</span></div>
+      <div class="stat"><b>9</b><span>課程＋測驗</span></div>
+      <div class="stat"><b id="stat-done">0</b><span>已完成</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="章節頁籤">
+  <div class="wrap">
+    <button class="tab on" data-page="home">4D 地圖</button>
+    <button class="tab" data-page="m1">01 基礎</button>
+    <button class="tab" data-page="m2">02 AI 如何運作</button>
+    <button class="tab" data-page="m3">03 兩個迴圈</button>
+    <button class="tab" data-page="m4">04 整合應用</button>
+    <button class="tab" data-page="m5">05 收尾</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="page on" id="page-home">
+    <div class="kicker">The 4D Framework · 一內一外兩個迴圈</div>
+    <h2>整門課就是這張圖</h2>
+    <p class="lede">內圈（Description ↔ Discernment）管每一次互動的品質：說清楚你要什麼、判斷回來的東西、把判斷餵進下一輪。外圈（Delegation ↔ Diligence）管更大的決策：什麼該交給 AI、交出去之後怎麼負責到底。點節點看定義。</p>
+
+    <div class="loop-card">
+      <svg class="loop-svg" viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="4D 雙迴圈圖">
+        <!-- 外圈 -->
+        <ellipse cx="450" cy="150" rx="400" ry="120" fill="none" stroke="var(--gold)" stroke-width="2" stroke-dasharray="8 7"/>
+        <!-- 內圈 -->
+        <ellipse cx="450" cy="150" rx="205" ry="70" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+        <!-- 內圈節點 -->
+        <g>
+          <rect x="185" y="122" width="130" height="56" rx="8" fill="var(--green-tint)" stroke="var(--green)" stroke-width="2"/>
+          <text x="250" y="146" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="var(--ink)">Description</text>
+          <text x="250" y="165" text-anchor="middle" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">把「好」說清楚</text>
+        </g>
+        <g>
+          <rect x="585" y="122" width="130" height="56" rx="8" fill="var(--green-tint)" stroke="var(--green)" stroke-width="2"/>
+          <text x="650" y="146" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="var(--ink)">Discernment</text>
+          <text x="650" y="165" text-anchor="middle" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">判斷回來的東西</text>
+        </g>
+        <text x="450" y="90" text-anchor="middle" font-family="Noto Sans TC" font-size="12" fill="var(--green)">內圈 · 日常互動的品質引擎</text>
+        <text x="450" y="130" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">prompt →</text>
+        <text x="450" y="182" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">← refine</text>
+        <!-- 外圈節點 -->
+        <g>
+          <rect x="20" y="122" width="120" height="56" rx="8" fill="var(--gold-tint)" stroke="var(--gold)" stroke-width="2"/>
+          <text x="80" y="146" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="var(--ink)">Delegation</text>
+          <text x="80" y="165" text-anchor="middle" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">決定交什麼</text>
+        </g>
+        <g>
+          <rect x="760" y="122" width="120" height="56" rx="8" fill="var(--gold-tint)" stroke="var(--gold)" stroke-width="2"/>
+          <text x="820" y="146" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="600" fill="var(--ink)">Diligence</text>
+          <text x="820" y="165" text-anchor="middle" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">擁有最終結果</text>
+        </g>
+        <text x="450" y="262" text-anchor="middle" font-family="Noto Sans TC" font-size="12" fill="var(--gold)">外圈 · 何時交出、如何負責的決策框架</text>
+      </svg>
+      <div class="loop-note">效率增益的去向：更好的顧客服務＋更多高價值時間</div>
+    </div>
+
+    <div class="kicker">Sections · 點卡片進入章節</div>
+    <h2 style="margin-bottom:16px">六個章節在教什麼</h2>
+    <div class="mods">
+      <button class="modcard" data-page="m1">
+        <span class="secid">SEC 01</span>
+        <h3>基礎與 4D 框架</h3>
+        <p>定義 AI Fluency、建立你的「事業脈絡文件」（全課程的基石），然後認識 4D 框架與兩個迴圈。</p>
+        <span class="cnt">2 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m2">
+        <span class="secid">SEC 02</span>
+        <h3>AI 如何運作</h3>
+        <p>生成式 AI 的原理、強項與極限，加上一個親手玩的「下一個詞」生成器——理解它之後，幻覺就不神祕了。</p>
+        <span class="cnt">2 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m3">
+        <span class="secid">SEC 03</span>
+        <h3>兩個迴圈實戰</h3>
+        <p>內圈：用 Description × Discernment 做法規追蹤與市場研究。外圈：用 Delegation × Diligence 安全處理敏感資料。</p>
+        <span class="cnt">2 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m4">
+        <span class="secid">SEC 04</span>
+        <h3>整合應用</h3>
+        <p>四個 D 一起上：盤點自動化機會、寫三種 Description 建工作流、規劃 Diligence，再起草你的 AI 使用政策。</p>
+        <span class="cnt">2 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m5">
+        <span class="secid">SEC 05</span>
+        <h3>收尾與證書</h3>
+        <p>本週就挑一件真實任務跑完整 4D、後續資源（blueprints、進階課程）、拿證書。</p>
+        <span class="cnt">1 課＋測驗 · 筆記已填</span>
+      </button>
+    </div>
+
+    <div class="howto">
+      <b>📋 這門課怎麼學最有效</b>
+      <ol>
+        <li>影片講觀念、練習做中學——<b>練習不要跳過</b>，它們是課程的主體，而且全部拿你自己的生意當材料。</li>
+        <li>第一課做出來的「事業脈絡文件」會被後面每一課引用，先把它做好。</li>
+        <li>照順序讀完一課筆記後，實際去做該課的練習，回來勾完成。</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="page" id="page-m1"></section>
+  <section class="page" id="page-m2"></section>
+  <section class="page" id="page-m3"></section>
+  <section class="page" id="page-m4"></section>
+  <section class="page" id="page-m5"></section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    互動學習筆記 · 個人整理改作，非官方內容，如有出入請以原課程為準。<br>
+    原課程：<a href="https://anthropic.skilljar.com/ai-fluency-for-small-businesses" target="_blank" rel="noopener">AI Fluency for Small Businesses — Anthropic Academy</a>（Copyright 2026 Anthropic，基於 Prof. Rick Dakan 與 Prof. Joseph Feller 的 AI Fluency Framework，CC BY-NC-SA 4.0 授權釋出）。本筆記依同條款以非商業方式改作分享。
+  </div>
+</footer>
+
+<script>
+/* ══════════ 各課筆記（個人轉寫整理） ══════════ */
+
+const N_INTRO = `
+<div class="note">
+  <div class="big">🏪 <b>一句話抓住這課：</b>AI Fluency＝有效率、有效果、合乎倫理、安全地使用 AI 的能力。開始用工具之前，先把「你是誰、你的店要往哪去、你絕不妥協什麼」寫清楚——這份文件會讓之後每一次 AI 協作都站在共同理解上。</div>
+
+  <h4>課程輪廓（先看懂全貌）</h4>
+  <table>
+    <tr><th>階段</th><th>內容</th></tr>
+    <tr><td>4D 框架</td><td>Delegation、Description、Discernment、Diligence——每一次有生產力的 AI 協作背後的四個動作</td></tr>
+    <tr><td>能力與限制</td><td>今天的 AI 能穩定做什麼、不能做什麼——這決定你怎麼派工</td></tr>
+    <tr><td>實戰應用</td><td>把 4D 用在真實任務：市場研究、顧客資料、日常營運</td></tr>
+    <tr><td>整合</td><td>建一條可重複的 AI 增強工作流＋一份合身的 AI 使用政策</td></tr>
+    <tr><td>下一步</td><td>blueprints、資源、完課證書</td></tr>
+  </table>
+
+  <h4>核心練習 · 建立你的「事業脈絡文件」</h4>
+  <div class="flow">
+    <div class="fstep"><b>Part I · 自我反思（先自己寫）</b>四題：事業的使命與願景、你想以什麼聞名？處境與角色（限制、強項、機會、團隊規模）？絕不妥協的核心價值與標準？造句：「如果 AI 能幫我＿＿，我就能把更多時間花在＿＿」。</div>
+    <div class="fstep"><b>Part II · 與 AI 協作</b>開一段對話：說明你是小事業主、想做一份可重複使用的事業脈絡摘要。可以請 AI 訪談你，或先丟資訊再問它還需要知道什麼。要涵蓋：使命願景價值、產品服務與客群、工作範圍、典型挑戰（現金流、人力、競爭、時間）、產業脈絡、改善機會、日常痛點、導入 AI 的目標、你的獨特之處。</div>
+    <div class="fstep"><b>Part III · 產出可重用文件</b>請 AI 把對話合成一份結構化文件、一起校對補漏，要求好複製好貼的格式——這就是你的「AI 簡報表」，之後每次協作先貼它。</div>
+  </div>
+  <div class="tip">💡 帶入自己的事業做這個練習：例如把「命理內容平台＋水晶電商＋iOS App」的多線業務寫成一份脈絡文件，之後不管找 AI 寫文案、分析銷售還是規劃內容，都不用每次重講一遍。注意敏感資料先不放（後面的課會教資料衛生）。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · AI Fluency 的定義是哪四個形容詞？</summary>
+    <div class="dbody">有效率（efficient）、有效果（effective）、合乎倫理（ethical）、安全（safe）。四個缺一不可——快但不對、對但踩線，都不算 fluent。</div></details>
+  <details><summary>Q2 · 效率增益「應該」流向哪裡？</summary>
+    <div class="dbody">更好的顧客服務、以及更多做高價值工作的時間——不是省下來就好，而是轉換成事業和生活品質。</div></details>
+</div>
+`;
+
+const N_4D = `
+<div class="note">
+  <div class="big">🧭 <b>一句話抓住這課：</b>4D＝內外兩個迴圈。內圈（Description＆Discernment）管你每天和 AI 的來回；外圈（Delegation＆Diligence）管更大的問題——什麼時候該用、用了之後誰負責。</div>
+
+  <h4>四個 D 的定義（背起來，全課都在用）</h4>
+  <table>
+    <tr><th>D</th><th>定義</th><th>迴圈</th></tr>
+    <tr><td><b>Delegation 委派</b></td><td>決定什麼交給 AI、什麼留在你手上</td><td>外圈</td></tr>
+    <tr><td><b>Description 描述</b></td><td>清楚溝通你要什麼、希望 AI 怎麼進行</td><td>內圈</td></tr>
+    <tr><td><b>Discernment 判辨</b></td><td>行動之前，評估 AI 回給你的東西</td><td>內圈</td></tr>
+    <tr><td><b>Diligence 勤慎</b></td><td>為你使用 AI 的方式負全責、擁有最終結果</td><td>外圈</td></tr>
+  </table>
+
+  <h4>練習 · 把脈絡文件對映到 4D</h4>
+  <div class="flow">
+    <div class="fstep"><b>標記文件</b>把上一課文件裡的每個目標、疑慮、任務標上最相關的 D：委派＝「AI 該不該碰這個」的決定；描述＝「怎麼講清楚」的問題；判辨＝「能不能信它給的」的疑慮；勤慎＝「責任、驗證、對顧客員工透明」的問題。<b>哪個 D 出現最多，就是你注意力所在——通常也是最快見效的地方。</b></div>
+    <div class="fstep"><b>試跑一件</b>從文件裡挑一件真的在等你的任務。開 AI 之前先寫下：涉及哪幾個 D（真實任務通常不只一個）？「夠好」的產出長怎樣？然後跑一輪——不求成品，只求有用的起點。</div>
+    <div class="fstep"><b>回顧</b>哪個 D 做起來自然？哪個讓你措手不及？記下一件下次會改的事。</div>
+  </div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 內圈和外圈各管什麼？</summary>
+    <div class="dbody">內圈（描述↔判辨）管日常互動的品質；外圈（委派↔勤慎）管「何時用、如何用、誰負責」的更大決策。</div></details>
+  <details><summary>Q2 · 為什麼要幫脈絡文件標 4D 標籤？</summary>
+    <div class="dbody">看哪個 D 出現最多——那是你的注意力已經聚焦之處，通常也是投入練習後收益最快的競爭力。</div></details>
+</div>
+`;
+
+const N_CAP = `
+<div class="note">
+  <div class="big">⚙️ <b>一句話抓住這課：</b>生成式 AI 是「創造新內容」而不只是分析既有資料。理解它怎麼被造出來（架構＋資料＋算力、預訓練＋微調），你就能清醒地判斷：哪些事交得出去、哪些事要盯緊。</div>
+
+  <h4>它是怎麼來的</h4>
+  <table>
+    <tr><th>層面</th><th>重點</th></tr>
+    <tr><td>三個成就條件</td><td>transformer 架構、海量訓練資料、大規模算力——三者齊備才有現代 LLM</td></tr>
+    <tr><td>訓練兩階段</td><td>預訓練（從數十億例子學語言模式）＋微調（學會有幫助地遵循指示）</td></tr>
+  </table>
+
+  <h4>能與不能（派工前的對照表）</h4>
+  <table>
+    <tr><th>目前強項</th><th>目前限制</th></tr>
+    <tr><td>任務多樣性（同個模型能寫能算能整理）</td><td>知識截止（訓練後的事它不知道）</td></tr>
+    <tr><td>自然的對話流</td><td>幻覺（自信地編出聽起來合理的東西）</td></tr>
+    <tr><td>連接外部工具</td><td>context window 上限、複雜多步推理</td></tr>
+  </table>
+  <div>最佳應用永遠是<b>人機互補</b>：你的判斷、創意、監督 × AI 的速度與規模。</div>
+
+  <h4>練習 · 測試邊界（用你錯了會立刻發現的領域）</h4>
+  <div class="flow">
+    <div class="fstep"><b>選好測試場</b>挑一個你熟到「供應商講錯你馬上抓到」的主題。寫下：兩三個任何像樣來源都該答對的事實、一個常見誤解、一個很難講清楚的點。</div>
+    <div class="fstep"><b>多樣性測試</b>請 AI 在一則回覆裡用三種口吻解釋同一主題：對外行顧客、對潛在合作夥伴、對新進員工。<b>受眾轉換是真的落地了，還是只換了詞彙？</b></div>
+    <div class="fstep"><b>幻覺測試</b>請它推薦兩三個具體資源（公會、產業刊物、主管機關、知名供應商），然後抽查至少一個：組織存在嗎？網址對嗎？聯絡方式正確嗎？——這裡最容易看到「自信地發明一個聽起來很像真的來源」。</div>
+    <div class="fstep"><b>知識截止＋推理測試</b>問一個時效性或在地問題（近期法規變動、原料價格趨勢、在地證照要求）：它有沒有主動說資訊可能過時？還是把舊資訊當現況講——那種照做會賠錢的？再讓它處理你寫下的常見誤解：它解開了真正的混淆，還是只重述正確事實？</div>
+  </div>
+  <div class="tip">💡 延伸：同一套題目丟給第二個模型跑一次，看強弱點是不是一樣的。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 生成式 AI 和其他 AI 的差別？</summary>
+    <div class="dbody">它「生成新內容」，而不只是分析或分類既有資料。</div></details>
+  <details><summary>Q2 · 為什麼測試要挑「自己很熟的領域」？</summary>
+    <div class="dbody">因為只有你能立刻驗證的主題，才能給你「哪些錯你抓得到、哪些錯會溜過去」的一手證據——這是日後決定信任範圍的基準。</div></details>
+</div>
+`;
+
+const N_EXPLORE = `
+<div class="note">
+  <div class="big">🎲 <b>一句話抓住這課：</b>還記得手機鍵盤「只用推薦字造句」的遊戲嗎？那就是一個 100% 可解釋的 next-token 生成器。原理簡單到嚇人：統計詞和詞之間的接續次數，正規化成機率，然後照機率挑下一個詞——挑的動作叫 <b>sampling</b>，和 Claude 這類現代模型用的是同一個詞。</div>
+
+  <h4>三步看懂「訓練」</h4>
+  <div class="flow">
+    <div class="fstep"><b>收集接續</b>拿幾句訊息，一句一句統計「A 後面接了幾次 B」。</div>
+    <div class="fstep"><b>建頻率表</b>統計完成的連接地圖叫 frequency table（轉移矩陣）；每一列正規化，就是「下一個詞」的機率分佈。</div>
+    <div class="fstep"><b>取樣生成</b>照目前為止的內容查表、按機率挑下一個詞——這就是 sampling。</div>
+  </div>
+
+  <h4>親手玩 · 迷你中文版（本站自製）</h4>
+  <div>用五句店家貼文「訓練」出來的轉移表。從頭開始，一路點選下一個詞，看你會走出哪一句公告：</div>
+  <div class="mkv" id="markov-widget">
+    <div class="sent"><span id="mkv-sent"></span><span class="cursor">▌</span></div>
+    <div class="opts" id="mkv-opts"></div>
+  </div>
+  <div>玩幾輪你會發現：它有時通順、有時走進奇怪的岔路——因為它<b>只知道機率，不知道意思</b>。把這個直覺放大一億倍，就是理解 LLM 幻覺與極限的起點。</div>
+
+  <h4>百年老技術</h4>
+  <div>Markov 在 1906 年就發表了這個想法。一個世紀後（約 2010）n-gram 模型驅動了手機的下一字預測（SwiftKey、蘋果 QuickType）；2015 年前後神經網路（先 RNN、2017 年 transformer）用「學出來的函數」取代了查表——然後就是我們現在身處的這一段。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · frequency table 正規化之後得到什麼？</summary>
+    <div class="dbody">每個「目前詞」對應的下一個詞機率分佈——生成時就按這個分佈取樣。</div></details>
+  <details><summary>Q2 · 「sampling」在這個小玩具和在 Claude 裡指的是同一件事嗎？</summary>
+    <div class="dbody">是——都是「根據目前為止的內容，從機率分佈裡挑下一個 token」。差別在現代模型的分佈是由巨大的學習函數算出來的，不是查表。</div></details>
+</div>
+`;
+
+const N_REFINE = `
+<div class="note">
+  <div class="big">🔁 <b>一句話抓住這課：</b>內圈實戰。流利的 AI 使用發生在一個緊湊的迴圈裡：你描述要什麼 → 模型回應 → 你判辨回來的東西 → 把判斷餵進下一輪描述。Description＝把「好」長什麼樣講清楚；Discernment＝批判性評估輸出（品質、相關性、偏誤），也評估協作本身。</div>
+
+  <h4>四條鐵則</h4>
+  <table>
+    <tr><th>原則</th><th>意思</th></tr>
+    <tr><td>有效的描述提供脈絡</td><td>說清楚你的生意是什麼、想達成什麼、具體需要知道什麼</td></tr>
+    <tr><td>判辨不是選配</td><td>法規、價格數據、期限這類<b>具體主張</b>，一律標記出來對照一手來源驗證</td></tr>
+    <tr><td>迴圈是迭代的</td><td>每一輪回應學到的東西，都拿去精煉下一個 prompt</td></tr>
+    <tr><td>AI 加速研究，不取代專業</td><td>做決定的還是你——用你自己的商業判斷</td></tr>
+  </table>
+
+  <h4>練習 1 · 法規與政策追蹤</h4>
+  <div class="flow">
+    <div class="fstep"><b>備料（Description）</b>選一個跟你生意相關的法規領域，寫下：具體想搞懂的規範／你的事業脈絡（賣什麼、在哪營運、客群、為什麼關心）／需要知道什麼（對商業模式的影響、合規步驟、期限、成本）／時間與地理範圍。</div>
+    <div class="fstep"><b>審查（Discernment）</b>用上述脈絡寫成完整 prompt 丟給 AI，然後對回應做三件事：找出<b>至少兩個</b>需要對官方來源驗證的主張；注意缺掉的視角（有講到對你這種規模的影響嗎）；標記看起來過時、過於籠統、或把不同轄區規定混在一起的資訊。</div>
+    <div class="fstep"><b>加碼</b>請 AI 替摘要裡的一個關鍵法規主張找出原始出處——具體的條文或官方公告。</div>
+  </div>
+
+  <h4>練習 2 · 市場研究與競品分析</h4>
+  <div class="flow">
+    <div class="fstep"><b>備料</b>選一個研究焦點（新產品線、競爭版圖、新客群），寫下：核心產品與市場差異化／事業特徵（規模、營收區間、地區、目標客群輪廓）／要回答的具體問題／<b>什麼資訊才會真的改變你正在做的決定</b>。</div>
+    <div class="fstep"><b>審查</b>檢查提到的競品、市場數據、趨勢是否真實且是現況；具體數字（市場規模、定價基準、成長率）自己查證；找出過時資訊（早倒閉的店、退燒的趨勢）；判斷分析是真的貼合你這種規模，還是為大企業寫的通用內容。</div>
+  </div>
+  <div class="tip">💡 反思題值得認真答：提供事業脈絡後的產出，和一個「通用 prompt」的產出差多少？你要在工作流裡養成哪些固定的驗證習慣？</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 哪一類內容「一律」要對一手來源驗證？</summary>
+    <div class="dbody">具體主張——法規條文、價格數據、期限日期這種照做會有真實後果的資訊。</div></details>
+  <details><summary>Q2 · Discernment 除了評估輸出，還評估什麼？</summary>
+    <div class="dbody">協作本身——這輪對話哪裡卡、prompt 哪裡沒講清楚，讓下一輪更好。</div></details>
+</div>
+`;
+
+const N_TRANSP = `
+<div class="note">
+  <div class="big">🔒 <b>一句話抓住這課：</b>外圈實戰。交出去之前想清楚：對的任務、對的工具、<b>對的資料</b>；收回來之後擁有它：對照你所知驗證、對外透明、負責到底。這課的主軸是資料隱私與資料衛生。</div>
+
+  <h4>資料衛生六原則</h4>
+  <table>
+    <tr><th>原則</th><th>做法</th></tr>
+    <tr><td>AI 帶來新的隱私考量</td><td>有些工具會拿你的輸入去訓練未來的模型——先讀資料處理政策</td></tr>
+    <tr><td>工具配任務</td><td>資料敏感度越高，隱私設定要越嚴</td></tr>
+    <tr><td>先剝掉不必要的</td><td>分享前移除識別性細節</td></tr>
+    <tr><td>出事快處理</td><td>刪除對話、要求刪除資料</td></tr>
+    <tr><td>累積驗證過的做法</td><td>把有效的方式記錄下來以便重複——不是盲目信任</td></tr>
+    <tr><td>不擅長數據也能受益</td><td>腦力激盪、試算表公式、把你的數字翻成白話</td></tr>
+  </table>
+
+  <h4>練習三連 · 用一份真實文件跑完整外圈</h4>
+  <div class="flow">
+    <div class="fstep"><b>① 決定分享什麼（Delegation）</b>挑一份你已經讀過、有點熟的真實文件。逐行標記不想外流的東西——姓名、聯絡方式、精確金額——做一份去識別副本：名字換成「Customer A / Vendor X」、敏感數字改成範圍。開 AI 之前寫好 brief：要達成什麼（「搞懂上季回頭預訂為什麼掉」贏過「分析我的銷售數據」）／你自己已經注意到的 2–3 個模式／有用的輸出長什麼樣（摘要？趨勢？異常清單？）。</div>
+    <div class="fstep"><b>② 與 AI 驗證（內圈）</b>丟去識別文件＋目標，請它找出主要模式。然後比對你自己的筆記：它抓到你已經發現的了嗎？有你沒注意到的嗎？它錯過或搞錯了什麼你早就知道的？<b>AI 看得到的和你看得到的之間的落差，就是你身為事業主不可取代的判斷。</b></div>
+    <div class="fstep"><b>③ 擁有結果（Diligence）</b>三問：<b>準確性</b>——有沒有結論超出資料實際顯示的範圍？<b>有用性</b>——什麼照用、什麼要改、什麼直接砍？<b>當責</b>——這份東西你敢掛自己的名字嗎（給顧客看、放進報告、據以行動）？敢不敢，差在哪？</div>
+  </div>
+  <div class="tip">💡 加碼題：如果 AI 錯得很關鍵，你的接住計畫是什麼？用一句話寫下你會怎麼發現、怎麼處理。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 分享事業資料給 AI 之前的兩個動作？</summary>
+    <div class="dbody">讀工具的資料處理政策（會不會拿去訓練），以及去識別化——名字換代號、精確數字改範圍，剝掉任務用不到的細節。</div></details>
+  <details><summary>Q2 · 「AI 沒看出來但你看出來了」代表什麼？</summary>
+    <div class="dbody">那個落差正是你的領域判斷的價值所在——也是為什麼最終決策和責任留在人身上。</div></details>
+</div>
+`;
+
+const N_TYING = `
+<div class="note">
+  <div class="big">🧩 <b>一句話抓住這課：</b>四個 D 一起上，把一件重複的營運工作變成可靠的 AI 工作流。順序是：問題覺察 → 委派（「該不該」不只「能不能」）→ 三種描述 → 真實例子迭代測試 → 勤慎部署。這是全課程最重的一課（50 分鐘），也是最值錢的一課。</div>
+
+  <h4>五步建流程</h4>
+  <div class="flow">
+    <div class="fstep"><b>問題覺察</b>分析真實工作量：顧客在問什麼？什麼模式一直重複？</div>
+    <div class="fstep"><b>任務委派</b>問「AI <b>該</b>做這個嗎」，不只是「能不能」——有文件的 FAQ 是絕佳候選；客訴處理和判斷題留給人。</div>
+    <div class="fstep"><b>豐富描述</b>定義系統產出什麼、一步步的邏輯、以及語氣／界線／行為規則（下面展開）。</div>
+    <div class="fstep"><b>迭代測試（Discernment）</b>用真實例子測——真實世界的測試會暴露描述沒涵蓋到的縫隙。預期跑 2–3 輪修正才會穩。</div>
+    <div class="fstep"><b>勤慎部署</b>輸出到顧客手上之前先審、誠實揭露 AI 的角色、永遠提供通往真人的路。</div>
+  </div>
+
+  <h4>練習 1 · 盤點自動化機會</h4>
+  <details>
+    <summary>三分類法<span class="when">先盤點再分類再排序</span></summary>
+    <div class="dbody">列出過去一週 5–10 件重複／耗時的任務，記下：頻率、每次耗時、標準化程度、做不好的後果。然後分三類：<b>AI 可全包</b>（標準回覆、有文件的資訊、清楚可重複的流程——例：營業時間、退貨政策 FAQ）；<b>AI 輔助、人決定</b>（AI 草擬整理、人審過才送出——例：個人化跟進信、顧客回饋摘要）；<b>人來做</b>（高風險決策、情緒敏感情境、複雜判斷——例：處理客訴、談合約、服務失誤補救）。最後從前兩類挑一件最省時間的，寫一句為什麼它優先。</div>
+  </details>
+
+  <h4>練習 2 · 三種 Description</h4>
+  <details>
+    <summary>Product · 產出什麼</summary>
+    <div class="dbody">2–3 句寫清楚：想要的最終結果？系統會收到什麼輸入（進來的信、詢問表單、FAQ 清單）？該產出什麼（分類好的信＋草稿回覆、標記待人工審核的項目）？</div>
+  </details>
+  <details>
+    <summary>Process · 一步步的邏輯</summary>
+    <div class="dbody">像寫給一位<b>能力很強但極度字面理解</b>的新員工：收到輸入第一步做什麼？決策點在哪（「問價格→用附的價目表；客製需求→標記給人」）？什麼情況升級給真人？需要存取哪些資料（FAQ 頁、價目表、取消政策）？</div>
+  </details>
+  <details>
+    <summary>Performance · 行為規則</summary>
+    <div class="dbody">語氣（親切專業／輕鬆溫暖／正式簡潔）？不確定時怎麼辦（「不確定就直說並標記人工審核——絕不用猜的」）？<b>絕不做什麼</b>（絕不承諾具體時段、絕不透露其他顧客資訊、絕不未經核准給折扣）？回應前怎麼先承接對方的請求？寫完用 3–5 個真實案例測試：分類對嗎？語氣合適嗎？有沒有捏造它其實沒有的資訊？</div>
+  </details>
+
+  <h4>練習 3 · Diligence 三層規劃</h4>
+  <table>
+    <tr><th>層</th><th>要回答的問題</th></tr>
+    <tr><td>Creation</td><td>為什麼這件任務適合 AI？列<b>至少三種失敗模式</b>（報錯價格、用罐頭回應客訴、把 A 客的資訊給 B 客）——每種怎麼發現、放什麼保險？出錯對顧客與生意的實際衝擊？</td></tr>
+    <tr><td>Deployment</td><td>每則輸出都審還是抽查、為什麼？什麼證據出現才降低監督？長期怎麼監控（每週抽查、顧客回饋追蹤、錯誤日誌）？什麼狀況直接停機？</td></tr>
+    <tr><td>Transparency</td><td>誰需要知道有 AI 參與（顧客、員工、夥伴）？揭露的實際用語寫出來（信件頁尾、網站聲明、服務條款）？想找真人時的管道？你的產業或轄區有沒有 AI 揭露的特定要求？</td></tr>
+  </table>
+  <div class="tip">💡 收尾寫一份 3–5 句的「自動化就緒聲明」：自動化什麼、為何適合、有哪些保險、如何透明——給自己和團隊當基準文件。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 委派的關鍵問句是什麼？</summary>
+    <div class="dbody">「AI <b>該</b>做這個嗎？」——不只是「能不能」。能做但不該做的（客訴、判斷題），留給人。</div></details>
+  <details><summary>Q2 · 三種 Description 各叫什麼、各管什麼？</summary>
+    <div class="dbody">Product（產出什麼：結果／輸入／輸出）、Process（一步步邏輯與升級點）、Performance（語氣、界線、行為規則）。</div></details>
+  <details><summary>Q3 · 為什麼一定要用真實例子測試？</summary>
+    <div class="dbody">真實世界的測試會暴露描述沒涵蓋到的縫隙——2–3 輪迭代是正常且必要的。</div></details>
+</div>
+`;
+
+const N_HUMAN = `
+<div class="note">
+  <div class="big">🤝 <b>一句話抓住這課：</b>「人在迴圈裡」不只是監督——是<b>由你決定 AI 該解什麼問題</b>。對付依賴的解方是理解、不是迴避；AI 該讓你有更多時間做「更人」的工作，不是更少。</div>
+
+  <h4>四個立場</h4>
+  <table>
+    <tr><th>議題</th><th>立場</th></tr>
+    <tr><td>依賴的檢驗</td><td>你能解釋 AI 正在做什麼嗎？答得出來＝健康的使用；答不出來才是警訊</td></tr>
+    <tr><td>人味的去向</td><td>省下的時間投入手寫卡片、個人化關懷、關係經營——AI 讓你更有空「當人」</td></tr>
+    <tr><td>文化規範</td><td>及早跟團隊講清楚：AI 省下來的時間怎麼用——別讓它變成焦慮來源</td></tr>
+    <tr><td>AI 政策的意義</td><td>把你的理解規模化——平台、任務委派、監督、透明、價值觀的決策，文件化讓全隊共用</td></tr>
+  </table>
+
+  <h4>練習 · 起草你的一頁 AI 使用政策</h4>
+  <div class="flow">
+    <div class="fstep"><b>反思三問</b>翻出第一課的脈絡文件重讀一遍（你已經做了好幾個練習，眼光不同了），回答：現在放心交給 AI 的<b>具體</b>任務（不是「寫作」，是「草擬常見顧客詢問的初版回覆」）？永遠留給人的工作（判斷、關係、當責不可讓渡之處）？顧客和團隊需要知道什麼（如果有人當面問，你會怎麼說）？</div>
+    <div class="fstep"><b>與 AI 共同起草</b>丟脈絡文件＋三問答案，請它起草三節的一頁政策：<b>我們用 AI 做什麼</b>（核准的具體任務與工具）／<b>什麼留給人</b>（AI 不碰的工作和為什麼）／<b>我們怎麼當責</b>（監督、透明、出錯時的處理）。然後照慣例：讀、把不像你們的改掉、補漏、砍掉不真實的。</div>
+    <div class="fstep"><b>壓力測試</b>兩個問題：有沒有哪句話你說軟了、其實該講更直接？顧客直接問「你們有用 AI 嗎」——這份政策給得出清楚誠實的答案嗎？</div>
+  </div>
+  <div class="tip">💡 這份政策不是法務文件，是「全隊對 AI 使用方式的共同約定」——讓大家照同一份理解做事，而不是各自即興。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 判斷「健康使用 vs 依賴」的檢驗問句？</summary>
+    <div class="dbody">「你能解釋 AI 正在做什麼嗎？」——能解釋代表理解在你手上；防依賴靠理解，不靠迴避。</div></details>
+  <details><summary>Q2 · 一頁政策的三節是什麼？</summary>
+    <div class="dbody">我們用 AI 做什麼／什麼留給人／我們怎麼當責（監督、透明、出錯處理）。</div></details>
+</div>
+`;
+
+const N_CLOSE = `
+<div class="note">
+  <div class="big">🎓 <b>一句話抓住這課：</b>別讓學習停在「懂了」。<b>本週就挑一件真的在等你的任務</b>，完整走一遍 4D——記住它是迴圈不是直線，在四個能力之間來回流動，正是 fluency 的樣子。</div>
+
+  <h4>期末任務 · 三步走</h4>
+  <div class="flow">
+    <div class="fstep"><b>選任務</b>挑一件具體的：競品／定價掃描、服務頁或銷售信文案、銷售或預訂資料的初步分析、社群貼文或電子報草稿、新人 onboarding 文件更新、貸款或提案敘述。</div>
+    <div class="fstep"><b>走 4D</b><b>委派</b>：哪些部分 AI 幫得上、哪些要你的領域知識、哪些資料絕不進 AI 工具？<b>描述</b>：給事業脈絡（賣什麼、客群、品牌語氣）＋明確的格式、語氣、完成度要求。<b>判辨</b>：對照你對自己市場的真實了解——價格、主張、競品引用全查，抓出缺口與捏造。<b>勤慎</b>：對照自己的紀錄、網站、實際定價驗證；符合揭露要求與內部標準；在該透明的地方（團隊、顧客、夥伴）透明。</div>
+    <div class="fstep"><b>反思</b>什麼順、什麼下次會改？哪個 D 自然、哪個要練？AI 的輸出有沒有需要大改的時刻？你會給同事什麼護欄建議？</div>
+  </div>
+
+  <h4>之後去哪裡</h4>
+  <table>
+    <tr><th>資源</th><th>說明</th></tr>
+    <tr><td>Blueprints</td><td>claude.com/resources/use-cases——常見工作的逐步指南（研究、寫作、資料分析、流程優化），可直接改編成小事業用途</td></tr>
+    <tr><td>累積自己的手冊</td><td>把對你的生意有效的 prompt 和工作流記成一份滾動文件——不用每次從零開始，團隊也接得上手</td></tr>
+    <tr><td>進階課程</td><td>《AI Fluency: Framework &amp; Foundations》——4D 框架的深度版，任務越複雜越用得上</td></tr>
+    <tr><td>持續關注法規</td><td>AI 相關規範變動很快（如 FTC 對 AI 生成行銷、評論、顧客溝通的指引，以及各州隱私法）——顧客導向的 AI 應用要跟著調整</td></tr>
+  </table>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 為什麼說 4D 是「迴圈不是直線」？</summary>
+    <div class="dbody">實際做事時你會在委派、描述、判辨、勤慎之間來回流動——判辨的發現讓你回頭改描述、甚至重新考慮委派。這種流動本身就是 fluency。</div></details>
+  <details><summary>Q2 · 完課後第一件該做的事？</summary>
+    <div class="dbody">本週就挑一件真實任務用 4D 跑完——把課程從知識變成肌肉記憶。</div></details>
+</div>
+`;
+
+/* ══════════ 章節資料 ══════════ */
+const MODULES = {
+  m1: {
+    sec: "SEC 01 · INTRODUCTION", zh: "基礎與 4D 框架",
+    lede: "先搞清楚 AI Fluency 是什麼、把你的事業脈絡寫成文件，再把 4D 框架裝進腦袋——這兩課是全課程的地基。",
+    lessons: [
+      { en:"AI Fluency for small businesses", zh:"小事業主的 AI Fluency", mins:"15 分鐘", notes: N_INTRO },
+      { en:"The 4D Framework", zh:"4D 框架", mins:"15 分鐘", notes: N_4D },
+    ]
+  },
+  m2: {
+    sec: "SEC 02 · HOW AI WORKS", zh: "AI 如何運作",
+    lede: "知道它怎麼被造出來、能與不能在哪，你的委派決策才有依據。附一個親手玩的生成器。",
+    lessons: [
+      { en:"AI capabilities and limitations", zh:"AI 的能力與限制", mins:"25 分鐘", notes: N_CAP },
+      { en:"Explore!", zh:"動手玩：可解釋的下一個詞生成器", mins:"10 分鐘", notes: N_EXPLORE },
+    ]
+  },
+  m3: {
+    sec: "SEC 03 · THE TWO LOOPS", zh: "兩個迴圈實戰",
+    lede: "內圈用在研究：描述給脈絡、判辨抓主張。外圈用在資料：先去識別再分享、收回來自己擁有。",
+    lessons: [
+      { en:"Refining with AI", zh:"與 AI 一起精煉（Description ↔ Discernment）", mins:"30 分鐘", notes: N_REFINE },
+      { en:"Transparent AI use", zh:"透明的 AI 使用（Delegation ↔ Diligence）", mins:"30 分鐘", notes: N_TRANSP },
+    ]
+  },
+  m4: {
+    sec: "SEC 04 · PUTTING IT ALL TOGETHER", zh: "整合應用",
+    lede: "四個 D 一起上：從盤點到三種描述到勤慎部署，建出第一條 AI 工作流；再把整套理解寫成一頁政策。",
+    lessons: [
+      { en:"Tying it all together", zh:"融會貫通：建立自動化工作流", mins:"50 分鐘", notes: N_TYING },
+      { en:"Human in the loop", zh:"人在迴圈裡", mins:"20 分鐘", notes: N_HUMAN },
+    ]
+  },
+  m5: {
+    sec: "SEC 05 · CONCLUSION", zh: "收尾與證書",
+    lede: "本週挑一件真實任務跑完整 4D、把資源收進口袋，然後去做測驗拿證書。",
+    lessons: [
+      { en:"Closure and looking forward", zh:"收束與展望", mins:"15 分鐘", notes: N_CLOSE },
+      { en:"Course quiz", zh:"課程測驗", mins:"完課驗收", notes: "<div class='note'><div class='big'>✅ 完成所有章節後作答，通過即可領取完課證書。答錯的觀念可以記在這裡，回頭補對應章節。</div></div>" },
+    ]
+  }
+};
+
+/* ══════════ 渲染 ══════════ */
+for (const [id, m] of Object.entries(MODULES)) {
+  const page = document.getElementById("page-" + id);
+  page.innerHTML = `
+    <div class="kicker">${m.sec}</div>
+    <h2>${m.zh}</h2>
+    <p class="lede">${m.lede}</p>
+    ${m.lessons.map((l,i)=>`
+      <div class="lesson" id="${id}-l${i}">
+        <div class="lesson-hd" data-toggle="${id}-l${i}">
+          <input type="checkbox" class="lswitch" data-done="${id}-l${i}" aria-label="標記完成" onclick="event.stopPropagation()">
+          <div class="ltitle">
+            <div class="en">${l.en}</div>
+            <div class="zh">${l.zh}</div>
+            <div class="mins">⏱ ${l.mins}</div>
+          </div>
+          <span class="chip todo" id="chip-${id}-l${i}">待學習</span>
+          <span class="arr">▾</span>
+        </div>
+        <div class="lesson-bd">${l.notes}</div>
+      </div>`).join("")}
+  `;
+}
+
+function goto(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.page===id));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("on", p.id==="page-"+id));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("[data-page]").forEach(el=>{
+  el.addEventListener("click", ()=>goto(el.dataset.page));
+});
+document.addEventListener("click", e=>{
+  const hd = e.target.closest(".lesson-hd");
+  if(hd) document.getElementById(hd.dataset.toggle).classList.toggle("open");
+});
+let done = 0;
+document.addEventListener("change", e=>{
+  if(!e.target.matches("[data-done]")) return;
+  const chip = document.getElementById("chip-" + e.target.dataset.done);
+  const on = e.target.checked;
+  chip.textContent = on ? "已完成" : "待學習";
+  chip.className = "chip " + (on ? "done" : "todo");
+  done += on ? 1 : -1;
+  document.getElementById("stat-done").textContent = done;
+});
+
+/* ══════════ 迷你 Markov 生成器（本站自製教學玩具） ══════════ */
+(function(){
+  const corpus = [
+    "我們 今天 有 新 到 的 水晶",
+    "我們 今天 公休 一天",
+    "新 到 的 水晶 已經 上架 了",
+    "歡迎 私訊 詢問 水晶 的 價格",
+    "上架 的 商品 已經 售完 了"
+  ];
+  const START = "＿開始＿", END = "。";
+  const chain = {};
+  corpus.forEach(s=>{
+    const w = [START, ...s.split(" "), END];
+    for(let i=0;i<w.length-1;i++){
+      (chain[w[i]] = chain[w[i]] || {});
+      chain[w[i]][w[i+1]] = (chain[w[i]][w[i+1]] || 0) + 1;
+    }
+  });
+  let cur = START, sentence = [];
+  const sentEl = document.getElementById("mkv-sent");
+  const optsEl = document.getElementById("mkv-opts");
+  if(!sentEl) return;
+  function render(){
+    sentEl.textContent = sentence.join("");
+    optsEl.innerHTML = "";
+    const nexts = chain[cur] || {};
+    const total = Object.values(nexts).reduce((a,b)=>a+b,0);
+    const ended = cur === END || total === 0;
+    if(!ended){
+      Object.entries(nexts).sort((a,b)=>b[1]-a[1]).forEach(([w,c])=>{
+        const b = document.createElement("button");
+        b.innerHTML = (w===END ? "（句點）" : w) + "<small>" + Math.round(c/total*100) + "%</small>";
+        b.onclick = ()=>{ if(w!==END) sentence.push(w); cur = w; render(); };
+        optsEl.appendChild(b);
+      });
+    } else {
+      const doneMsg = document.createElement("span");
+      doneMsg.textContent = "✅ 生成完畢！";
+      doneMsg.style.cssText = "font-size:13px;color:var(--green);align-self:center";
+      optsEl.appendChild(doneMsg);
+    }
+    const r = document.createElement("button");
+    r.className = "mkv-reset";
+    r.textContent = "↺ 重來";
+    r.onclick = ()=>{ cur = START; sentence = []; render(); };
+    optsEl.appendChild(r);
+  }
+  render();
+})();
+</script>
+</body>
+</html>

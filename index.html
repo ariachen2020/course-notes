@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>課程筆記書架 · Anthropic Academy 互動學習筆記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F3EF;
+    --ink:#22242A;
+    --ink-soft:#63666E;
+    --line:rgba(34,36,42,.14);
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'Noto Sans TC',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.75;min-height:100vh;display:flex;flex-direction:column}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px;width:100%}
+
+  header{border-bottom:2px solid var(--ink)}
+  .hd{padding:40px 0 30px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:12px}
+  h1{font-weight:900;font-size:clamp(30px,5vw,46px);line-height:1.18;letter-spacing:.01em}
+  .sub{margin-top:12px;max-width:620px;color:var(--ink-soft);font-size:15px}
+
+  main{flex:1;padding:40px 0 70px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+
+  .shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .book{
+    display:block;text-decoration:none;color:inherit;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);background:#fff;
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  .book:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(34,36,42,.14)}
+  .cover{padding:22px 20px 16px;border-bottom:2px solid rgba(0,0,0,.08)}
+  .cover svg{width:100%;height:84px;display:block;margin-bottom:14px}
+  .cover .tagname{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+  .cover h2{font-size:19px;font-weight:900;line-height:1.35;margin-top:4px}
+  .meta{padding:14px 20px 18px;font-size:13px;color:var(--ink-soft);background:#fff}
+  .meta .stats{font-family:var(--mono);font-size:11.5px;margin-bottom:6px;display:flex;gap:14px;flex-wrap:wrap}
+  .meta .go{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:12px;font-weight:600}
+
+  /* 各書封面用各站自己的設計代幣 */
+  .b-code .cover{background:#ECEFE9;color:#16283C}
+  .b-code .cover .go-c{color:#2E7F8F}
+  .b-code .meta .go{color:#2E7F8F}
+  .b-fluency .cover{background:#F6F2E9;color:#2B241C}
+  .b-fluency .meta .go{color:#2F6B4F}
+  .b-cowork .cover{background:#EDF0F2;color:#232830}
+  .b-cowork .meta .go{color:#4653BE}
+
+  .howadd{margin-top:34px;border:1px dashed var(--line);border-radius:10px;padding:16px 20px;font-size:13.5px;color:var(--ink-soft);background:rgba(255,255,255,.6)}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(34,36,42,.07);padding:1px 5px;border-radius:4px}
+
+  footer{border-top:1px solid var(--line);padding:20px 0 36px;font-size:12.5px;color:var(--ink-soft)}
+  footer a{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="eyebrow">Anthropic Academy · 個人學習筆記（非官方）</div>
+    <h1>課程筆記書架</h1>
+    <p class="sub">把 Anthropic Academy 的課程逐課轉寫成互動筆記站——每門課有自己的視覺隱喻與課程地圖，主題頁籤配互動圖解、實戰流程與自我檢核。點一本開始讀。</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="kicker">Shelf · 三門課，三張地圖</div>
+  <div class="shelf">
+
+    <a class="book b-code" href="./claude-code/">
+      <div class="cover">
+        <svg viewBox="0 0 300 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 20 62 Q 90 18 160 40 T 285 28" fill="none" stroke="#2E7F8F" stroke-width="2" stroke-dasharray="6 5"/>
+          <circle cx="20" cy="62" r="6" fill="none" stroke="#16283C" stroke-width="2"/>
+          <polygon points="112,26 120,40 104,40" fill="none" stroke="#16283C" stroke-width="2"/>
+          <polygon points="200,32 208,46 192,46" fill="none" stroke="#16283C" stroke-width="2"/>
+          <polygon points="279,16 287,30 271,30" fill="none" stroke="#16283C" stroke-width="2"/>
+          <circle cx="279" cy="26" r="2.6" fill="#D99A21"/>
+          <g transform="translate(20,62) rotate(-22)"><path d="M0,0 L13,4 L0,8 L4,4 Z" fill="#D99A21"/></g>
+        </svg>
+        <div class="tagname">飛航航線圖 · STEER → CONFG → AUTOM → VERIF</div>
+        <h2>Claude Code in Action</h2>
+      </div>
+      <div class="meta">
+        <div class="stats"><span>4 模組</span><span>9 課＋測驗</span><span>筆記完整</span></div>
+        放手讓 Claude 長時間飛行，然後有信心驗收落地——plan mode、hooks、routines、驗證方法與 plugins。
+        <span class="go">進入筆記站 →</span>
+      </div>
+    </a>
+
+    <a class="book b-fluency" href="./ai-fluency/">
+      <div class="cover">
+        <svg viewBox="0 0 300 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="150" cy="42" rx="135" ry="34" fill="none" stroke="#D9971E" stroke-width="2" stroke-dasharray="7 6"/>
+          <ellipse cx="150" cy="42" rx="72" ry="20" fill="none" stroke="#2F6B4F" stroke-width="2.4"/>
+          <rect x="60" y="32" width="42" height="20" rx="5" fill="#E3EDE5" stroke="#2F6B4F" stroke-width="1.6"/>
+          <rect x="198" y="32" width="42" height="20" rx="5" fill="#E3EDE5" stroke="#2F6B4F" stroke-width="1.6"/>
+          <rect x="6" y="32" width="34" height="20" rx="5" fill="#F6E8CB" stroke="#D9971E" stroke-width="1.6"/>
+          <rect x="260" y="32" width="34" height="20" rx="5" fill="#F6E8CB" stroke="#D9971E" stroke-width="1.6"/>
+        </svg>
+        <div class="tagname">4D 雙迴圈 · Delegation × Description × Discernment × Diligence</div>
+        <h2>AI Fluency for Small Businesses</h2>
+      </div>
+      <div class="meta">
+        <div class="stats"><span>6 章節</span><span>9 課＋測驗</span><span>筆記完整</span></div>
+        小事業主的 AI 流利術——事業脈絡文件、資料衛生、自動化工作流與一頁 AI 政策，練習全拿自己的生意當材料。
+        <span class="go">進入筆記站 →</span>
+      </div>
+    </a>
+
+    <a class="book b-cowork" href="./cowork/">
+      <div class="cover">
+        <svg viewBox="0 0 300 84" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="8" y="8" width="284" height="68" rx="6" fill="none" stroke="#232830" stroke-width="2"/>
+          <rect x="20" y="18" width="58" height="48" rx="3" fill="#fff" stroke="#4653BE" stroke-width="1.8"/>
+          <rect x="88" y="18" width="58" height="48" rx="3" fill="#fff" stroke="#4653BE" stroke-width="1.8"/>
+          <rect x="156" y="18" width="58" height="48" rx="3" fill="#fff" stroke="#4653BE" stroke-width="1.8"/>
+          <rect x="224" y="18" width="56" height="48" rx="3" fill="#fff" stroke="#4653BE" stroke-width="1.8"/>
+          <path d="M 10 42 L 49 42 L 49 70 L 117 70 L 117 42 L 185 42 L 185 70 L 251 70 L 251 42" fill="none" stroke="#DE6E48" stroke-width="1.8" stroke-dasharray="5 5"/>
+          <circle cx="251" cy="42" r="4" fill="#DE6E48"/>
+        </svg>
+        <div class="tagname">辦公室平面圖 · 幫你的 AI 新同事辦入職</div>
+        <h2>Introduction to Claude Cowork</h2>
+      </div>
+      <div class="meta">
+        <div class="stats"><span>5 模組</span><span>14 課＋測驗</span><span>筆記完整</span></div>
+        從「問 Claude 問題」到「把整件工作交辦給 Claude」——設定、四塊積木、Chrome 與 M365、安全與團隊共享。
+        <span class="go">進入筆記站 →</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="howadd">
+    <b>📚 之後怎麼加新課程：</b>新課程用 course-notes-site skill 生成後，把檔案改名 <code>index.html</code> 放進新的子資料夾（如 <code>./framework-foundations/</code>），再回到這頁複製一張書卡、換上該課的封面圖與連結即可。
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    個人學習筆記，非官方內容，如有出入請以原課程為準 · 原課程皆來自 <a href="https://anthropic.skilljar.com/" target="_blank" rel="noopener">Anthropic Academy</a>
+  </div>
+</footer>
+
+</body>
+</html>

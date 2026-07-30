@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Claude Cowork · 互動學習筆記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDF0F2;
+    --panel:#F9FBFC;
+    --ink:#232830;
+    --ink-soft:#5B6470;
+    --indigo:#4653BE;
+    --indigo-tint:#E3E7F7;
+    --coral:#DE6E48;
+    --coral-tint:#F9E6DB;
+    --line:rgba(35,40,48,.15);
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'Noto Sans TC',sans-serif;
+    --disp:'Space Grotesk','Noto Sans TC',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);line-height:1.78}
+  .wrap{max-width:1010px;margin:0 auto;padding:0 22px}
+
+  header{border-bottom:2px solid var(--ink)}
+  .hd{padding:34px 0 26px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--indigo);text-transform:uppercase;margin-bottom:10px}
+  .eyebrow a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--indigo)}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.16;letter-spacing:-.01em}
+  h1 em{font-style:normal;color:var(--coral)}
+  .sub{margin-top:12px;max-width:640px;color:var(--ink-soft);font-size:15px}
+  .stats{display:flex;gap:26px;margin-top:20px;flex-wrap:wrap}
+  .stat{font-family:var(--mono)}
+  .stat b{display:block;font-size:24px;font-weight:600}
+  .stat span{font-size:11.5px;color:var(--ink-soft)}
+
+  nav.tabs{position:sticky;top:0;z-index:50;background:var(--paper);border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabs .wrap{display:flex;gap:4px;padding-top:8px}
+  .tab{font-family:var(--mono);font-size:12.5px;white-space:nowrap;padding:10px 14px 9px;border:1px solid transparent;border-bottom:none;cursor:pointer;background:transparent;color:var(--ink-soft);border-radius:6px 6px 0 0}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:var(--panel);border-color:var(--ink);color:var(--ink);font-weight:600}
+
+  main{padding:36px 0 80px}
+  .page{display:none}
+  .page.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.page.on{animation:none}}
+
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(22px,3.2vw,30px);margin:6px 0 6px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--coral)}
+  .lede{color:var(--ink-soft);max-width:660px;font-size:14.5px;margin-bottom:26px}
+
+  .map-card{background:var(--panel);border:1px solid var(--ink);border-radius:10px;padding:24px 20px 8px;margin-bottom:34px}
+  .map-card svg{width:100%;height:auto;display:block}
+  .map-note{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);text-align:right;padding:6px 4px 10px}
+  .room{cursor:pointer}
+  .room:hover rect{fill:var(--indigo-tint)}
+
+  .mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px;margin-bottom:36px}
+  .modcard{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--indigo);border-radius:8px;padding:16px;cursor:pointer;text-align:left;font-family:var(--sans);transition:transform .15s ease,box-shadow .15s ease}
+  .modcard:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(35,40,48,.10);border-left-color:var(--coral)}
+  .modcard .secid{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--indigo)}
+  .modcard h3{font-family:var(--disp);font-size:16.5px;font-weight:700;margin:4px 0 6px}
+  .modcard p{font-size:13px;color:var(--ink-soft);line-height:1.62}
+  .modcard .cnt{font-family:var(--mono);font-size:11px;color:var(--coral);margin-top:10px;display:block}
+
+  .howto{background:var(--coral-tint);border:1px dashed var(--coral);border-radius:8px;padding:18px 20px;font-size:14px;margin-bottom:10px}
+  .howto ol{margin:8px 0 0 20px}
+  code{font-family:var(--mono);font-size:.9em;background:rgba(35,40,48,.07);padding:1px 5px;border-radius:4px}
+
+  .lesson{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;overflow:hidden}
+  .lesson-hd{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;cursor:pointer}
+  .lesson-hd:hover{background:rgba(70,83,190,.05)}
+  .lswitch{margin-top:5px;width:15px;height:15px;accent-color:var(--indigo);cursor:pointer;flex-shrink:0}
+  .ltitle{flex:1}
+  .ltitle .en{font-family:var(--mono);font-size:12px;color:var(--indigo)}
+  .ltitle .zh{font-size:16px;font-weight:700}
+  .ltitle .mins{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .chip{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:99px;flex-shrink:0;margin-top:4px}
+  .chip.todo{background:rgba(35,40,48,.08);color:var(--ink-soft)}
+  .chip.done{background:var(--indigo);color:#fff}
+  .lesson-bd{border-top:1px dashed var(--line);padding:14px 18px 16px;display:none;font-size:14px}
+  .lesson.open .lesson-bd{display:block}
+  .arr{margin-left:auto;font-family:var(--mono);color:var(--ink-soft);margin-top:4px}
+
+  .note{font-size:14px}
+  .note .big{font-size:14.5px;background:var(--indigo-tint);border-left:3px solid var(--indigo);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px}
+  .note h4{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);margin:16px 0 6px}
+  .note details{border:1px solid var(--line);border-radius:6px;margin-bottom:8px;background:#fff;overflow:hidden}
+  .note summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;gap:10px;align-items:baseline}
+  .note summary::-webkit-details-marker{display:none}
+  .note summary::before{content:"▸";font-family:var(--mono);color:var(--indigo);transition:transform .15s}
+  .note details[open] summary::before{transform:rotate(90deg)}
+  .note summary .when{font-size:12px;color:var(--ink-soft);font-weight:400;margin-left:auto;text-align:right;flex-shrink:0}
+  .note .dbody{padding:10px 14px 12px;border-top:1px dashed var(--line)}
+  .note table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  .note th,.note td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+  .note th{background:var(--indigo-tint);font-family:var(--mono);font-size:12px}
+  .note .cmd{display:block;font-family:var(--mono);font-size:12.5px;background:var(--ink);color:#EDEFF3;padding:8px 12px;border-radius:6px;margin:8px 0;overflow-x:auto}
+  .note .flow{margin:10px 0 4px;counter-reset:step}
+  .note .fstep{position:relative;padding:0 0 16px 30px;border-left:2px dashed var(--indigo);margin-left:11px}
+  .note .fstep:last-child{border-left-color:transparent;padding-bottom:4px}
+  .note .fstep::before{counter-increment:step;content:counter(step);position:absolute;left:-12px;top:0;width:22px;height:22px;border-radius:50%;background:var(--indigo);color:#fff;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+  .note .fstep b{display:block}
+  .note .tip{background:var(--coral-tint);border-radius:6px;padding:9px 13px;font-size:13px;margin:10px 0}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:12.5px;color:var(--ink-soft)}
+  footer a{color:var(--indigo)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hd">
+    <div class="eyebrow">Anthropic Academy · 個人學習筆記（非官方） · 原課程：<a href="https://anthropic.skilljar.com/introduction-to-claude-cowork" target="_blank" rel="noopener">Introduction to Claude Cowork</a></div>
+    <h1>幫你的 AI 新同事<br><em>辦入職</em></h1>
+    <p class="sub">Cowork 的核心轉變只有一句：從「問 Claude 問題」變成「把整件工作交辦給 Claude」。這門課帶你走完一位新同事的入職流程——認識它、交第一件工作、教它你的做法、放它到各個工作平面、最後學會安全共事與團隊共享。</p>
+    <div class="stats">
+      <div class="stat"><b>5</b><span>模組</span></div>
+      <div class="stat"><b>14</b><span>課程＋測驗</span></div>
+      <div class="stat"><b id="stat-done">0</b><span>已完成</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="模組頁籤">
+  <div class="wrap">
+    <button class="tab on" data-page="home">平面圖</button>
+    <button class="tab" data-page="m1">01 認識 Cowork</button>
+    <button class="tab" data-page="m2">02 變成你的</button>
+    <button class="tab" data-page="m3">03 隨處工作</button>
+    <button class="tab" data-page="m4">04 安全與共享</button>
+    <button class="tab" data-page="m5">05 收尾</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section class="page on" id="page-home">
+    <div class="kicker">Office Floor Plan · 入職路線</div>
+    <h2>帶新同事走一圈辦公室</h2>
+    <p class="lede">四個房間對應四個模組：先在迎新區認識彼此並交辦第一件工作，到客製工作台教它你的做法，再帶它到外勤區看瀏覽器和 Office 文件這些工作現場，最後在安全與共享室講清楚規矩、把好用的東西分給全隊。點房間直接進入模組。</p>
+
+    <div class="map-card">
+      <svg viewBox="0 0 920 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="課程平面圖：四個房間對應四個模組">
+        <!-- 辦公室外牆 -->
+        <rect x="14" y="20" width="892" height="240" rx="10" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+        <!-- 入口 -->
+        <line x1="14" y1="120" x2="14" y2="170" stroke="var(--paper)" stroke-width="4"/>
+        <text x="30" y="152" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)" transform="rotate(-90 30 152)">入口</text>
+        <!-- 房間 1 -->
+        <g class="room" data-page="m1" tabindex="0" role="button" aria-label="模組一 認識 Cowork">
+          <rect x="52" y="46" width="196" height="188" rx="6" fill="#fff" stroke="var(--indigo)" stroke-width="2"/>
+          <text x="66" y="76" font-family="IBM Plex Mono" font-size="11" fill="var(--indigo)">ROOM 01</text>
+          <text x="66" y="102" font-family="Noto Sans TC" font-size="16" font-weight="700" fill="var(--ink)">迎新區</text>
+          <text x="66" y="126" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">認識 Cowork、完成設定、</text>
+          <text x="66" y="143" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">交辦第一件真實工作</text>
+          <text x="66" y="220" font-family="IBM Plex Mono" font-size="11" fill="var(--coral)">4 課</text>
+        </g>
+        <!-- 房間 2 -->
+        <g class="room" data-page="m2" tabindex="0" role="button" aria-label="模組二 變成你的">
+          <rect x="268" y="46" width="196" height="188" rx="6" fill="#fff" stroke="var(--indigo)" stroke-width="2"/>
+          <text x="282" y="76" font-family="IBM Plex Mono" font-size="11" fill="var(--indigo)">ROOM 02</text>
+          <text x="282" y="102" font-family="Noto Sans TC" font-size="16" font-weight="700" fill="var(--ink)">客製工作台</text>
+          <text x="282" y="126" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">全域指示、projects、</text>
+          <text x="282" y="143" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">skills、plugins 四塊積木</text>
+          <text x="282" y="220" font-family="IBM Plex Mono" font-size="11" fill="var(--coral)">4 課</text>
+        </g>
+        <!-- 房間 3 -->
+        <g class="room" data-page="m3" tabindex="0" role="button" aria-label="模組三 隨處工作">
+          <rect x="484" y="46" width="196" height="188" rx="6" fill="#fff" stroke="var(--indigo)" stroke-width="2"/>
+          <text x="498" y="76" font-family="IBM Plex Mono" font-size="11" fill="var(--indigo)">ROOM 03</text>
+          <text x="498" y="102" font-family="Noto Sans TC" font-size="16" font-weight="700" fill="var(--ink)">外勤區</text>
+          <text x="498" y="126" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">瀏覽器（Claude in Chrome）</text>
+          <text x="498" y="143" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">與 M365 文件現場</text>
+          <text x="498" y="220" font-family="IBM Plex Mono" font-size="11" fill="var(--coral)">2 課</text>
+        </g>
+        <!-- 房間 4 -->
+        <g class="room" data-page="m4" tabindex="0" role="button" aria-label="模組四 安全與共享">
+          <rect x="700" y="46" width="182" height="188" rx="6" fill="#fff" stroke="var(--indigo)" stroke-width="2"/>
+          <text x="714" y="76" font-family="IBM Plex Mono" font-size="11" fill="var(--indigo)">ROOM 04</text>
+          <text x="714" y="102" font-family="Noto Sans TC" font-size="16" font-weight="700" fill="var(--ink)">安全與共享室</text>
+          <text x="714" y="126" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">安全共事、eval 驗證、</text>
+          <text x="714" y="143" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">團隊 marketplace 發佈</text>
+          <text x="714" y="220" font-family="IBM Plex Mono" font-size="11" fill="var(--coral)">3 課</text>
+        </g>
+        <!-- 走道虛線 -->
+        <path d="M 18 145 L 150 145 L 150 250 L 366 250 L 366 145 L 582 145 L 582 250 L 791 250 L 791 145" fill="none" stroke="var(--coral)" stroke-width="2" stroke-dasharray="6 6" opacity=".85"/>
+        <circle cx="791" cy="145" r="5" fill="var(--coral)"/>
+        <text x="800" y="285" text-anchor="end" font-family="Noto Sans TC" font-size="11.5" fill="var(--ink-soft)">→ 出口：模組五收尾＋測驗</text>
+      </svg>
+      <div class="map-note">入職完成的定義：交辦一件工作，拿回一份完成的交付物</div>
+    </div>
+
+    <div class="kicker">Modules · 點卡片進入模組</div>
+    <h2 style="margin-bottom:16px">五個模組在教什麼</h2>
+    <div class="mods">
+      <button class="modcard" data-page="m1">
+        <span class="secid">MOD 01</span>
+        <h3>認識 Cowork</h3>
+        <p>Cowork 是什麼、跟 Chat 和 Code 差在哪、哪三種形狀的工作適合交給它，然後實際交辦第一件工作。</p>
+        <span class="cnt">4 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m2">
+        <span class="secid">MOD 02</span>
+        <h3>變成你的</h3>
+        <p>四塊積木讓 Cowork 越用越懂你：全域指示、projects、skills、plugins——各學一種知識、彼此相乘。</p>
+        <span class="cnt">4 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m3">
+        <span class="secid">MOD 03</span>
+        <h3>隨處工作</h3>
+        <p>沒有 connector 的網頁工具交給 Claude in Chrome；Word、Excel、PPT、Outlook 裡面直接有 Claude。</p>
+        <span class="cnt">2 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m4">
+        <span class="secid">MOD 04</span>
+        <h3>安全與共享</h3>
+        <p>資料夾邊界與無歧義 prompt、用 eval 驗證你建的 skill、透過公司 marketplace 把 plugin 分給全隊。</p>
+        <span class="cnt">3 課 · 筆記已填</span>
+      </button>
+      <button class="modcard" data-page="m5">
+        <span class="secid">MOD 05</span>
+        <h3>收尾</h3>
+        <p>課程回顧、本週就能做的五選一行動清單、後續學習路徑，然後做測驗拿證書。</p>
+        <span class="cnt">1 課＋測驗 · 筆記已填</span>
+      </button>
+    </div>
+
+    <div class="howto">
+      <b>📋 這個站怎麼用</b>
+      <ol>
+        <li>照房間順序走：每課筆記末尾有「自我檢核」，先想再點開答案。</li>
+        <li>每個模組都有「Try it now」動手項——這門課是操作課，開著 Claude 桌面版邊學邊做效果最好。</li>
+        <li>上完一課勾選完成；做完測驗回來可以在測驗卡加「弱點回顧」。</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="page" id="page-m1"></section>
+  <section class="page" id="page-m2"></section>
+  <section class="page" id="page-m3"></section>
+  <section class="page" id="page-m4"></section>
+  <section class="page" id="page-m5"></section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    互動學習筆記 · 個人整理，非官方內容，全篇為轉寫改述，如有出入請以原課程為準。<br>
+    來源：<a href="https://anthropic.skilljar.com/introduction-to-claude-cowork" target="_blank" rel="noopener">Introduction to Claude Cowork — Anthropic Academy</a>（Copyright 2026 Anthropic. All rights reserved.）
+  </div>
+</footer>
+
+<script>
+/* ══════════ 各課筆記（個人轉寫整理） ══════════ */
+
+const N_WHAT = `
+<div class="note">
+  <div class="big">🤝 <b>一句話抓住這課：</b>Cowork 不是更聰明的聊天機器人，是另一種工作方式。Chat 是「跟 Claude 一起想」；Cowork 是「把整件工作交辦出去」——描述你要的結果，Claude 規劃、執行、把完成的交付物存回你的資料夾。</div>
+
+  <h4>Cowork 實際上是什麼</h4>
+  <div>桌面 app 裡的一種工作模式：指定一個資料夾＋連接工作所在的 app（信箱、Slack、雲端硬碟、行事曆）＋描述要完成什麼。Claude 擬計畫、逐步執行、動用需要的工具與檔案，最後把真實的交付物存回資料夾。也能在雲端跑（beta，限部分方案）——從網頁和手機 app 啟動、查看。它「在你的環境裡」工作：讀寫你的檔案、從你連接的 app 取脈絡、透過 Claude in Chrome 操作沒有 connector 的網頁、實際採取行動而不只是告訴你該怎麼做。</div>
+
+  <h4>最重要的心態轉換</h4>
+  <div>從 Chat 過來的人第一直覺是：打個問題、看回覆、再追問、反覆迭代。這在 Cowork 也行得通，但真正的用法是——<b>把「你原本會自己動手做的工作」交給它，而不是「你原本會提問的問題」</b>。Chat 是回合制、由你自己串接步驟；Cowork 撐起一整件工作：同時從多個工具取材、跑完多步驟計畫、交回完成品。</div>
+
+  <h4>三種模式對照</h4>
+  <table>
+    <tr><th>模式</th><th>本質</th><th>最適合</th></tr>
+    <tr><td><b>Chat</b></td><td>對話——你問、草擬、腦力激盪</td><td>提問探索、自己會再修的草稿、一則回覆裝得下的事</td></tr>
+    <tr><td><b>Cowork</b></td><td>工作區——指資料夾與工具，描述結果，Claude 規劃執行交付</td><td>跨檔案跨工具的多步驟工作、產出真實文件（doc／deck／sheet）、啟動後先去忙別的</td></tr>
+    <tr><td><b>Code</b></td><td>開發環境——在 codebase 裡改檔、跑測試、commit</td><td>repo 裡的開發工作，不是文件工作</td></tr>
+  </table>
+  <div>多數知識工作者會活在 Chat 和 Cowork 之間——而且拿它們做非常不同的事。</div>
+
+  <h4>你仍握有控制權</h4>
+  <div>開工前 Claude 先給你看計畫；預設模式下，會影響外界的動作（寄送、刪除、分享）先問過你；過程中隨時可以介入轉向。</div>
+
+  <div class="tip">💡 課程建議你先想一件「價值在動手、不只在想」的近期任務——跨了幾個工具、最後親手拼出一份交付物的那種。記下來，第 3、4 課會用到。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 從 Chat 到 Cowork，最核心的心態轉換是什麼？</summary>
+    <div class="dbody">從「問你原本會提問的問題」變成「交辦你原本會自己動手做的工作」——delegating, not just chatting。</div></details>
+  <details><summary>Q2 · 一件任務同時牽涉本地檔案、多個工具、多個步驟、要產出真實文件——該用哪個模式？</summary>
+    <div class="dbody">Cowork。這四個特徵正是「Cowork 型工作」的解剖構造。</div></details>
+</div>
+`;
+
+const N_SETUP = `
+<div class="note">
+  <div class="big">📁 <b>一句話抓住這課：</b>設定的靈魂是「指哪個資料夾」——那是 Claude 讀與寫的邊界。原則：<b>挑能裝下任務所需脈絡的最小資料夾</b>，不夠之後可以再加，一開始就不要給整個 Documents。</div>
+
+  <h4>設定四步</h4>
+  <div class="flow">
+    <div class="fstep"><b>安裝</b>Mac／Windows 桌面 app（claude.com/download），登入後選 Cowork；也有雲端版（beta，限部分方案）。看不到 Cowork 可能是方案或版本問題。</div>
+    <div class="fstep"><b>指資料夾</b>點「Work in a project or folder」選一個資料夾。Claude 會讀裡面每個檔案（Word、Excel、PDF、PPT），完成的輸出也存回這裡。這是跟 Chat 最大的差別：Chat 只能讀你上傳的，<b>Cowork 能寫回你的電腦</b>。</div>
+    <div class="fstep"><b>接 connectors</b>在 Customize 一次設定，之後逐任務開關。多數人先接：信箱與行事曆（Gmail 或 M365 Outlook）、訊息（Slack／Teams）、雲端硬碟（Drive、SharePoint、Box）、CRM 與專案工具。接好後在 prompt 裡自然提到即可——「查一下團隊在 Slack 講了什麼」。</div>
+    <div class="fstep"><b>認識權限模式</b>見下表。挑好模式後，你就能放心把一整件工作交出去——「交辦而非聊天」的體感，是權限模型在背後撐起來的。</div>
+  </div>
+
+  <h4>權限模式</h4>
+  <table>
+    <tr><th>模式</th><th>行為</th><th>適合</th></tr>
+    <tr><td>Ask before acting（預設）</td><td>每個觸及外界的動作（寄信、發訊息、分享檔案）先停下來問你</td><td>新工具、不熟的檔案、想盯緊的事</td></tr>
+    <tr><td>Act without asking</td><td>不逐一暫停，較快但風險較高</td><td>你正在旁邊盯著、且工具與檔案都可信時</td></tr>
+  </table>
+  <div><b>兩種模式下都不變：</b>永久刪除檔案一定先問，這個確認不可跳過。另外和 Chat 一樣，你可以控制哪些 connector 可用、多常要求授權，管理者可關網路搜尋、你可以限制 Claude in Chrome 能造訪的網站。</div>
+
+  <details>
+    <summary>☁️ 雲端檔案的差異<span class="when">connector ≠ 資料夾</span></summary>
+    <div class="dbody">connector 能做什麼因服務而異——預設的 Google Drive 和 M365 多為<b>唯讀搜尋</b>，有些能建立或編輯（啟用時看各 connector 的說明確認）。你的工作資料夾才是 Claude 直接編修檔案的地方。雲端 session 接的是 connectors、碰不到你電腦上的資料夾——檔案在本機時，從桌面版啟動。</div>
+  </details>
+
+  <div class="tip">💡 Try it now：指一個有真實工作的資料夾（不放心就先複製一份）、接一個 app，然後請 Claude「看完這個資料夾，寫一份 brief：裡面有什麼、文件之間的關係、任何意外的洞察」。拿它跟你自己的認知對照——它抓到什麼你漏掉的？漏掉什麼你知道的？</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 資料夾怎麼挑？</summary>
+    <div class="dbody">裝得下任務脈絡的最小資料夾——來源材料、相關文件、模板都在，但不要整個 Documents。不夠再加，永遠比一開始給太多好。</div></details>
+  <details><summary>Q2 · 哪個護欄在兩種權限模式下都不變？</summary>
+    <div class="dbody">永久刪除檔案前一定先問，這個確認無法跳過。</div></details>
+</div>
+`;
+
+const N_PATTERNS = `
+<div class="note">
+  <div class="big">🔍 <b>一句話抓住這課：</b>三個形狀認出 Cowork 的活：<b>多步驟、真實檔案、跨工具</b>。共同點是——以前要在你腦中同時操心步驟、檔案、工具的工作，現在能包成一件任務交出去。看到這個形狀，就給它。</div>
+
+  <h4>三個 pattern</h4>
+  <table>
+    <tr><th>Pattern</th><th>特徵</th><th>例子</th></tr>
+    <tr><td>① 多步驟</td><td>蒐集→比對→研究→草擬→排版，一個 prompt 交出整條弧線；Progress 面板逐步顯示進度</td><td>一週客戶回饋信分類成主題附例句；三份報告＋一張試算表拼成一個儀表板</td></tr>
+    <tr><td>② 真實檔案</td><td>目標是產出真實 artifact（doc／sheet／deck／PDF），輸入也是真檔案——讀既有檔、就地編修、存回去</td><td>用標準模板＋會議記錄拼出客戶提案；原始試算表組出含圖表的月報</td></tr>
+    <tr><td>③ 跨工具</td><td>工作橫跨你既有的系統，Claude 經 connectors 取脈絡並行動；差別在 Cowork <b>把整串當一次交辦</b>規劃執行，不用你逐句串</td><td>會後根據邀請、與會者、記錄草擬 Outlook 跟進信；搜遍 Slack 關於某次上線的討論合成一份 update</td></tr>
+  </table>
+
+  <details>
+    <summary>⏰ 排程任務：讓它照節奏跑<span class="when">/schedule</span></summary>
+    <div class="dbody">兩種建法：直接 <code>/schedule</code> 描述任務與節奏，Claude 草擬 prompt 給你審；或者——更自然的路——<b>先在 Cowork 做一次、確認產出對了，再輸入 /schedule 把那個流程變成週期任務</b>。節奏可選每小時、每日、平日或手動。
+    <br><br>在哪裡跑取決於 Cowork 在哪裡跑：雲端排程照時間在雲端執行、電腦不用開著、走 connectors；桌面排程要電腦開著且 Claude 在跑——錯過時間會在你回來時補跑並告知延遲。任務留在建立它的地方。值得排的：週五回顧（本週出了什麼、Slack 重大決定、下週預覽）、每月一號的指標彙整、根據行事曆＋會議記錄＋信件的晨間簡報。</div>
+  </details>
+
+  <details>
+    <summary>☁️ 雲端 Cowork：不在座位上也能開工<span class="when">手機啟動、桌機收尾</span></summary>
+    <div class="dbody">第三種情境：人不在電腦旁。從手機 app 或任何瀏覽器啟動任務、中途查看、回到桌前收成品。兩件事先知道：雲端 session 接 <b>connectors 不接本機資料夾</b>——要本機檔案就從桌面啟動；<b>在哪啟動就在哪跑</b>，session 不會搬家，要換地方就開新的。例：通勤路上想起客戶會議需要上季工單摘要，手機上交辦、到辦公室審稿。</div>
+  </details>
+
+  <div class="tip">💡 課程作業：看這週的行事曆或待辦，挑一件符合任一 pattern 的工作寫下來——下一課就拿它交辦。（以你的情況：IATA 月報整理、每週命理文案排程，都是教科書級的候選。）</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 三個 pattern 是哪三個？</summary>
+    <div class="dbody">多步驟、真實檔案（產出與輸入都是實檔）、跨工具。共同形狀：能包成一件任務交出去的工作。</div></details>
+  <details><summary>Q2 · 桌面排程和雲端排程差在哪？</summary>
+    <div class="dbody">桌面排程要電腦開著，錯過會補跑並通知；雲端排程照時執行、不需開機，但接的是 connectors 而非本機資料夾。任務固定留在建立它的環境。</div></details>
+</div>
+`;
+
+const N_FIRST = `
+<div class="note">
+  <div class="big">📨 <b>一句話抓住這課：</b>節奏不像 prompt 聊天機器人，像交辦一位聰明同事：交代清楚 → 回答它的釐清問題 → 中途看到走偏就介入 → 最後把檔案當同事的作品來驗收。前期多花的功夫，換掉的是之後五輪「啊對了還要…」。</div>
+
+  <h4>好的交辦 prompt 做三件事</h4>
+  <table>
+    <tr><th>要素</th><th>內容</th></tr>
+    <tr><td>說清交付物</td><td>「一頁 brief」「QBR 的一張 slide」「附註解的排序清單」——格式與長度的具體度，省掉一次重做</td></tr>
+    <tr><td>指名輸入</td><td>哪個資料夾、哪些頻道、什麼日期範圍、哪個應用——Cowork 的好壞取決於你指向的脈絡</td></tr>
+    <tr><td>補上 nuance</td><td>只有你知道的專業細節與判斷（「要含基準／最佳／最壞情境，並計入去年 Q3 新開的三個據點」）</td></tr>
+  </table>
+  <div>缺哪一項，Cowork 通常就會回頭問你哪一項。</div>
+
+  <h4>交辦全程四步</h4>
+  <div class="flow">
+    <div class="fstep"><b>交辦</b>指資料夾、開相關 connectors、寫齊三要素。</div>
+    <div class="fstep"><b>回答釐清問題</b>非平凡任務開工前多半先問一兩題——這是它在開工前補上脈絡缺口，不是流程阻力。多數是選項題點一下就好；都不合就用自己的話答。</div>
+    <div class="fstep"><b>中途掌舵</b>盯著計畫與進度，來源錯、格式錯、語氣錯就<b>直接打斷</b>。從 Chat 帶來的直覺是「等跑完再 regenerate」——抵抗它：Cowork 為中途修正而生，轉向成本很低；偏太多就停掉、帶著學到的重寫 prompt 再來。</div>
+    <div class="fstep"><b>驗收</b>交付物是檔案不是聊天串。像審「信任但還不熟」的同事作品：真的達成目標了嗎（還是做了微妙不同的東西）？事實對得上來源嗎（先請它列出取材文件，再自己查）？有沒有<b>追不到出處的日期、人名、引言</b>——那是警訊不是特色。大致對→直接叫它改（比重做快）；錯在承重處→是 prompt 缺了承重脈絡，補上去請它調整。</div>
+  </div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 好 prompt 的三要素？</summary>
+    <div class="dbody">交付物（格式長度）、輸入（資料夾／頻道／範圍）、nuance（只有你知道的專業細節）。</div></details>
+  <details><summary>Q2 · 發現它走偏，正確反應是？</summary>
+    <div class="dbody">當下打斷、直接修正——不要等跑完再重做。中途轉向是 Cowork 的設計內行為，成本低。</div></details>
+</div>
+`;
+
+const N_FOUR = `
+<div class="note">
+  <div class="big">🧱 <b>一句話抓住這課：</b>讓 Cowork 越用越好的是四塊積木：<b>global instructions</b>（你是誰）、<b>projects</b>（一條工作流的脈絡）、<b>skills</b>（流程該怎麼做）、<b>plugins</b>（整個職務的專業）。彼此獨立、互相加乘——它知道得越多，能接手的越多。</div>
+
+  <h4>四塊積木對照</h4>
+  <table>
+    <tr><th>積木</th><th>Cowork 學到什麼</th><th>解鎖什麼</th></tr>
+    <tr><td>Global instructions</td><td>你是誰、怎麼工作</td><td>每個任務一開始就校準好你的角色、格式、偏好</td></tr>
+    <tr><td>Projects</td><td>一條工作流的脈絡</td><td>在 project 裡像已經在團隊裡的人——檔案、歷史、到目前為止的決定都在手上</td></tr>
+    <tr><td>Skills</td><td>特定流程該怎麼做</td><td>對應任務出現時，照你團隊的方式跑：你的模板、標準、步驟</td></tr>
+    <tr><td>Plugins</td><td>你的職務或領域的專業</td><td>從通才變專才——這個位子需要的工作流、connectors、know-how 一次到位</td></tr>
+  </table>
+
+  <div class="tip">💡 不用第一天四塊全上，訊號會自己出現：同一個糾正給了好幾次 → global instruction 候選；一條工作流一直重複出現 → 開 project；同一套流程對 Claude 解釋了好幾遍 → 第一個 skill；流程成熟到值得分享 → 打包 plugin。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 四塊積木各自讓 Cowork 學到哪種知識？</summary>
+    <div class="dbody">Global instructions＝你這個人；projects＝一條工作流；skills＝一個流程的做法；plugins＝一個職務的整套專業。</div></details>
+</div>
+`;
+
+const N_CONTEXT = `
+<div class="note">
+  <div class="big">🗂️ <b>一句話抓住這課：</b>Chat 的記憶自己長；Cowork 跨任務的脈絡主要靠你搭。兩層架構：<b>global instructions</b> 罩住每一個 session，<b>projects</b> 罩住一條條工作流——而 project 裡的記憶，是 Claude 從你們的對話自己累積出來的。</div>
+
+  <h4>Global instructions：一份常備簡報</h4>
+  <div>Settings → Cowork → Global instructions 旁按 Edit，寫一次、每個 session（含排程任務）都參照。放三類東西：你是誰做什麼、你的術語與縮寫（省得每次解釋「QBR deck」是什麼）、輸出偏好（格式、長度、語氣）。不用一天寫完——<b>你重複給的那些糾正</b>（「結論放最前面」「不要牛津逗號」）就是最好的候選。</div>
+
+  <h4>Project 的四個元素</h4>
+  <table>
+    <tr><th>元素</th><th>誰建的</th><th>內容</th></tr>
+    <tr><td>Instructions</td><td>你</td><td>限定在這個 project 的指示（「本 project 服務每週轉型會議：蒐集各部門資料、蒸餾成每週簡報」）</td></tr>
+    <tr><td>Scheduled tasks</td><td>你</td><td>屬於這個 project 的週期任務——每次都帶著 project 脈絡跑</td></tr>
+    <tr><td>Context</td><td>你</td><td>一個以上的資料夾或連結，project 內每個對話都能取用</td></tr>
+    <tr><td><b>Memory</b></td><td><b>Claude</b></td><td>從 project 內的對話累積學到的東西——<b>這是 project 的差異所在</b>：外面每個 session 除了全域指示都從零開始；裡面每次對話都在累積，下個任務開場時客戶近況、上週決定、待辦事項已經在手上</td></tr>
+  </table>
+
+  <h4>什麼值得開一個 project ＋ 三種開法</h4>
+  <div>值得開的：一個客戶帳戶（會議記錄＋交付物＋帳戶常備指示）、一份週期性交付物（月報、季檢、週更——每個新週期自動接續上次的洞察）、一個 launch 或 initiative（brief、決策、狀態，一路到出貨）。開法三選一：<b>從零</b>／<b>指向既有資料夾</b>（成為工作目錄）／<b>從 Chat project 轉移</b>（指示與知識搬過來，<b>單向</b>——Cowork 端的修改不會同步回 Chat）。</div>
+
+  <div class="tip">💡 帶入你的情況：「arialifetalk 內容產線」就是標準的 project 素材——指向文案資料夾、instructions 寫品牌語氣與 SEO 要求、排一個每週貼文任務，記憶會自己累積讀者回饋和主題效果。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · project 四元素中哪個不是你寫的？</summary>
+    <div class="dbody">Memory——Claude 從 project 內的對話自己累積，這正是 project 與散裝 session 的最大差別。</div></details>
+  <details><summary>Q2 · Chat project 轉到 Cowork 之後，兩邊會同步嗎？</summary>
+    <div class="dbody">不會。轉移是單向的，Cowork 端的變更不會流回 Chat。</div></details>
+</div>
+`;
+
+const N_SKILLS = `
+<div class="note">
+  <div class="big">📖 <b>一句話抓住這課：</b>skill＝可重用的 playbook——一個裝著檔案與資源的資料夾，教 Claude 用你要的方式做某類工作。任務對上就<b>自動載入</b>，不用點名（想點名也可以）。你重複解釋的流程，教一次就好。</div>
+
+  <h4>skill 裡面可以有四種東西</h4>
+  <table>
+    <tr><th>檔案</th><th>作用</th></tr>
+    <tr><td>Instructions（SKILL.md）</td><td>這個 skill 做什麼、何時用、怎麼做——像寫給新同事的 runbook，具體到照著能動手</td></tr>
+    <tr><td>Assets</td><td>Logo、品牌模板、slide master、字型——產出「像真的」所需的原料</td></tr>
+    <tr><td>References</td><td>好輸出的範例、風格指南、條款庫——「好」長什麼樣的標竿，你會拿給新人看齊的過去作品</td></tr>
+    <tr><td>Scripts</td><td>每次都該一模一樣的部分交給程式跑——變異計算、結構化比對、圖表格式化</td></tr>
+  </table>
+  <div>組合跟著流程走：有的 skill 只有一份 SKILL.md，完全沒問題；有的四種俱全。<b>需要什麼放什麼，不多不少。</b></div>
+
+  <h4>建立與修改</h4>
+  <div class="flow">
+    <div class="fstep"><b>跟 Claude 一起建</b>在 Cowork 開新對話：「我想為【那個講到煩的重複流程】建一個 skill，帶我走一遍你需要知道什麼。」它會問：做什麼、何時觸發、好輸出長怎樣、參考哪些資源——答得越具體越好，指向真實範例、真實模板、真實過去產出。</div>
+    <div class="fstep"><b>裝好之後在 Customize 管理</b>要改就直接講：「加一步：超過十萬美元且滑落兩個階段的案子要標記——那永遠重要。」Claude 就地更新。</div>
+    <div class="fstep"><b>到處都會觸發</b>skill 在任何對話裡運作，包括 project 內——變異分析的 skill 只要任務是變異分析就會出動，不管你在哪個工作區。</div>
+  </div>
+
+  <div class="tip">💡 這課講的你已經在做了——你手上有一整排自訂 skills，包括生成本站的 course-notes-site。下一個好候選：arialifetalk 的「命理文章產線」skill（References 放你寫過最好的三篇當標竿）。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · skill 的四種內容物？</summary>
+    <div class="dbody">SKILL.md 指示、assets 素材、references 範例標竿、scripts 可執行程式——按流程需要組合。</div></details>
+  <details><summary>Q2 · skill 怎麼被觸發？</summary>
+    <div class="dbody">任務匹配就自動載入，不需點名；要明確指定（「用董事會備忘 skill」）也可以。</div></details>
+</div>
+`;
+
+const N_PLUGINS = `
+<div class="note">
+  <div class="big">📦 <b>一句話抓住這課：</b>plugin＝繞著一個「職務」打包的 skills 集合，連同它們依賴的 connectors 和 subagents。skill 是一本 playbook，plugin 是一整套——<b>專業跟著安裝走，不跟著人走</b>。</div>
+
+  <h4>先認識一個詞：subagent</h4>
+  <div>skill 可以派出的專責小幫手——在自己的 context 裡處理工作的一段（研究段派研究 subagent、草擬段派草擬 subagent）。</div>
+
+  <h4>兩種形狀</h4>
+  <details>
+    <summary>① 端到端流程包<span class="when">多個依序步驟</span></summary>
+    <div class="dbody">工作有一長串接續步驟時，把每一步的 skill 打包成一條龍。例：月結 plugin＝拉實績＋建變異表＋草擬董事會備忘三個 skill——團隊任何人一裝，得到整條流程照你的做法跑。</div>
+  </details>
+  <details>
+    <summary>② 團隊常用技能包<span class="when">彼此獨立的高頻工作</span></summary>
+    <div class="dbody">團隊最常伸手拿的 skills 綁成一包。例：財務 plugin＝變異分析＋財務建模＋投資備忘＋季報——互不依賴，但新同事裝一個東西就拿到全隊的工具箱。</div>
+  </details>
+  <div>判斷 plugin 的方式是看它繞著什麼轉：「客成團隊的續約準備」是一個 plugin，「基金的股票研究」是一個 plugin，「CFO 辦公室的每月董事會週期」是一個 plugin。</div>
+
+  <h4>裝、客製、自建</h4>
+  <div class="flow">
+    <div class="fstep"><b>從 marketplace 裝</b>Customize → Plugins，Anthropic 為常見職務（財務、法務、業務、行銷、客服、產品…）發佈了起手 plugin。Install → 核准它要用的 connectors → skills 立即可用。</div>
+    <div class="fstep"><b>客製成你們的版本</b>marketplace 版是強預設不是最終答案。裝好後 Customize → Plugins → 該 plugin → Customize，開一個對話一起調——例如：「這是我們最近三份 redline 過的 NDA，把 nda 相關 skill 的格式語氣改成跟這些一致。」越貼近真實工作，槓桿越大。</div>
+    <div class="fstep"><b>自建</b>沒有現成的就跟 Cowork 一起打包。從小開始：先一個最重複任務的 skill，再一個——累積到三四個 skills＋相關 connectors，就值得分享了。動手前先查公司 Directory，管理者可能已經發佈過。</div>
+  </div>
+
+  <div class="tip">💡 Try it now：在 Cowork 輸入 <code>/setup-cowork</code>——它會做一段短訪談，根據你的工作型態推薦最合適的 plugin，可直接從對話安裝測試。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · plugin 和 skill 的關係？</summary>
+    <div class="dbody">skill 是一本 playbook；plugin 是繞著一個職務打包的多本 playbook＋所需的 connectors 與 subagents，一次安裝整套到位。</div></details>
+  <details><summary>Q2 · plugin 的兩種形狀？</summary>
+    <div class="dbody">端到端流程包（依序步驟串成一條龍）與團隊常用技能包（互不依賴的高頻 skills 綁一起）。</div></details>
+</div>
+`;
+
+const N_CHROME = `
+<div class="note">
+  <div class="big">🌐 <b>一句話抓住這課：</b>沒有 connector 的工具，瀏覽器就是橋。每當你想「真想把這個脈絡給 Claude，可是它活在網頁上」——Claude in Chrome 就是答案。它在瀏覽器裡讀取與操作頁面，把結果交回 Cowork 組成交付物：<b>一個對話、兩個平面</b>。</div>
+
+  <h4>解鎖哪些工作</h4>
+  <table>
+    <tr><th>場景</th><th>例子</th></tr>
+    <tr><td>內部儀表板</td><td>Tableau、Looker、每週一要看的那個 BI 指標——拉數字、下載到電腦、餵給 Cowork 任務</td></tr>
+    <tr><td>供應商入口與客戶系統</td><td>沒有 API 的採購入口、SSO 後面的 CRM、要逐張分流的客服工單系統</td></tr>
+    <tr><td>登入牆後的 web app</td><td>任何有瀏覽器介面的工具（包括自家內部系統）都變得可指揮</td></tr>
+    <tr><td>收尾成交付物的網路研究</td><td>開十個分頁、各自取材、合成一份 brief——不用複製貼上</td></tr>
+  </table>
+
+  <h4>與 Cowork 搭配的實例</h4>
+  <div class="flow">
+    <div class="fstep"><b>交辦一句話</b>「打開客戶健康儀表板，拉出所有黃燈紅燈帳戶。」——儀表板在登入牆後、沒有 connector。</div>
+    <div class="fstep"><b>Chrome 出外勤</b>Claude 把瀏覽器步驟交給 Claude in Chrome：篩選、匯出、把資料帶回來。</div>
+    <div class="fstep"><b>Cowork 收尾</b>再從 Drive 拉各帳戶 30 天活動、從 Slack 拉近期討論，組成一頁摘要存進資料夾。一次交辦、三個脈絡來源。</div>
+  </div>
+
+  <h4>兩個 watch-out</h4>
+  <div><b>要自己先登入</b>——Claude 不能替你登入，它是在你已認證的 session 裡工作。<b>對開放網路上的存取要克制</b>——和 connectors 一樣，Claude 看得到你看得到的，但在網路上那是「你能存取的一切」；敏感網站要縮小它可操作的範圍、逐一審核動作再核准。（部分企業方案可能不提供 Claude in Chrome。）</div>
+
+  <div class="tip">💡 你現在就在體驗這課講的事——本站的每一課內容，就是 Claude 透過 Chrome 擴充功能、用你已登入的 session，從 Skilljar 的登入牆後面讀出來的。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 什麼時候輪到 Claude in Chrome 出場？</summary>
+    <div class="dbody">工作脈絡活在瀏覽器裡、而那個工具沒有 connector 的時候——儀表板、入口網站、登入牆後的任何 web app。</div></details>
+  <details><summary>Q2 · 兩個 watch-out？</summary>
+    <div class="dbody">登入要自己來（它用你已認證的 session）；網路上的存取範圍要刻意收窄、敏感站逐動作審核。</div></details>
+</div>
+`;
+
+const N_M365 = `
+<div class="note">
+  <div class="big">📄 <b>一句話抓住這課：</b>Claude 住進文件裡——Word、Excel、PowerPoint、Outlook 的 add-in，直接在你開著的檔案上工作。而且<b>一個對話能把脈絡從一個 app 帶進下一個</b>：Excel 的分析變 PPT 的 slide、Word 的備忘變 Outlook 的回信。</div>
+
+  <h4>各 app 的強項動作</h4>
+  <table>
+    <tr><th>App</th><th>能做什麼</th><th>最強的一招（轉寫）</th></tr>
+    <tr><td>Excel</td><td>分析資料、寫公式、抓 #REF! 與循環參照、不弄壞模型跑情境測試、引用回具體儲存格</td><td>「把 Q3 實績跟同一活頁簿的 Q3 計畫比對，變異評註寫進各行旁的 F 欄」</td></tr>
+    <tr><td>PowerPoint</td><td>讀你的 slide master、字型、配色照做；產原生可編輯圖表（不是貼圖）；對選取的 slide 操作</td><td>「把剛在 Excel 做的分析變成 QBR 三頁 deck，用我們的模板」</td></tr>
+    <tr><td>Word</td><td>就地起草、修訂、重排；處理註解與追蹤修訂；從連接來源取材落地</td><td>「根據本文與附錄引用的來源資料，起草執行摘要」</td></tr>
+    <tr><td>Outlook</td><td>帶著工作脈絡分流來信；根據過往往來、行事曆、近期決定草擬回覆</td><td>—</td></tr>
+  </table>
+
+  <h4>跨 app 接力（一個對話）</h4>
+  <div class="flow">
+    <div class="fstep"><b>Outlook → Word</b>客戶 brief 進信箱：「用公司模板在 Word 開始寫備忘」——Word 帶著附件與信件脈絡開啟。</div>
+    <div class="fstep"><b>Word → Excel</b>寫到一半需要數字：「把選項二背後的市場規模模型建出來」——Excel 拉著 brief 的假設建出可檢查公式的多分頁模型。</div>
+    <div class="fstep"><b>Excel → PowerPoint</b>「用客戶模板變成督導會 deck」——slide master 裡長出帶最新數字的原生圖表。</div>
+    <div class="fstep"><b>回到 Outlook</b>「週四前找團隊 30 分鐘」——邀請草擬好，等你按送出。</div>
+  </div>
+
+  <h4>Cowork vs M365 的分工規則</h4>
+  <div><b>多來源＋以交付物收尾 → Cowork</b>（二十個來源檔拼 brief、Salesforce＋三個 Slack 頻道拼報告、排程工作流）。<b>在 Office 檔案裡就地工作 → M365</b>（就地編修、跨 app 帶脈絡）。實務上兩者接力：Cowork 出初稿 deck，你開 PPT 跟 Claude 一起磨；Cowork 把資料灌進模型，你開 Excel 請 Claude 追你看到的異常值。兩個平面交接乾淨——<b>檔案在兩邊都是同一個檔案</b>。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 什麼時候用 Cowork、什麼時候用 M365 裡的 Claude？</summary>
+    <div class="dbody">拉很多來源、產一份交付物 → Cowork；已經在 Office 檔案裡、要就地編修或跨 app 帶脈絡 → M365。多數真實工作兩個都用。</div></details>
+</div>
+`;
+
+const N_SAFE = `
+<div class="note">
+  <div class="big">🛡️ <b>一句話抓住這課：</b>系統給的是地板（刪除必問、預設外部動作先問）；這課是你要疊上去的那層——<b>環境的邊界、無歧義的 prompt、該停下來想的時刻</b>。目的：讓一個有檔案、app、connector 存取權的自主工具，做不出你沒打算讓它做的事。</div>
+
+  <h4>第一層 · 環境：讓失誤搆不到重要的東西</h4>
+  <div class="flow">
+    <div class="fstep"><b>專用工作資料夾</b>最高槓桿的一步。指 Documents／Downloads／Desktop 等於讓新同事翻遍你所有檔案——為這件工作開一個資料夾，把需要的搬（或複製）進去，指那裡。</div>
+    <div class="fstep"><b>無可取代的先備份</b>重要且弄丟了拿不回來的（舊客戶交付物、無法重發的合約），先放一份到 Cowork 搆不到的地方。Claude 刪除前一定會問——但<b>點錯確認框的成本，就是那個檔案本身</b>。</div>
+    <div class="fstep"><b>新工作流先跑副本</b>要每週五自動跑的排程任務，第一次對著資料副本跑，看過它的行為再指向正式資料。</div>
+  </div>
+
+  <h4>第二層 · Prompt：不留錯誤動作的空間</h4>
+  <table>
+    <tr><th>原則</th><th>做法</th></tr>
+    <tr><td>破壞性動詞說清楚</td><td>「刪掉那段」可解讀成「畫面移除」或「從檔案刪除」——錯讀不可回復時就把意思寫明：「從草稿移除該節，<b>但保留檔案</b>」「新增附錄，<b>不要改寫既有章節</b>」</td></tr>
+    <tr><td>在 prompt 裡劃界</td><td>「只動這資料夾最近更新的 3 個檔」「只看 Q3 成交的合約」「不要傳訊息給任何人——只出草稿」——範圍收窄，飄移也看得出來</td></tr>
+    <tr><td>排程初期只出草稿</td><td>排程任務在你不看的時候跑——還沒建立信心之前，讓它草擬待你審，不代發</td></tr>
+  </table>
+
+  <h4>第三層 · 當下三查</h4>
+  <div><b>讀計畫</b>：開跑時它會在進度頁列出打算怎麼做——掃一遍：合理嗎？順序對嗎？來源對嗎？<b>警覺意外模式</b>：碰了你沒提的檔案或網站、範圍悄悄擴大 → 停。「感覺不對」是真訊號。<b>確認框認真讀</b>：多數事故不是護欄失效，是有人點過了一個不完全是他本意的確認。對話框存在是因為那個動作重要——就那樣對待它。</div>
+
+  <h4>什麼時候 Cowork 不是對的工具</h4>
+  <div>需要稽核軌跡的受監管流程（Cowork 活動不進 audit log、Compliance API、資料匯出）；任何你不會讓一位聰明敏捷的同事無監督去做的事（把法律文件寄給對造、發公開公告、推客戶可見的變更——<b>Claude 準備、你發射</b>）；超出 IT 明確核准邊界的高敏感個資。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 安全上槓桿最高的一步是？</summary>
+    <div class="dbody">資料夾的選擇——它是 Claude 能讀、能寫、（經確認後）能刪的邊界。專用資料夾，不用大雜燴。</div></details>
+  <details><summary>Q2 · 「Claude 刪除前一定會問」為什麼還要備份？</summary>
+    <div class="dbody">因為確認框可能被順手點過——護欄擋不住「點錯的那一下」，而那一下的成本就是檔案本身。無可取代的東西放到它搆不到的地方。</div></details>
+</div>
+`;
+
+const N_EVAL = `
+<div class="note">
+  <div class="big">🧪 <b>一句話抓住這課：</b>你建的 skill 是一個會被別人使用的小產品。eval 不是考試，是<b>試駕</b>：真實請求進、看輸出、用白話講要改什麼。目的是在同事踩到之前，先抓住它會絆倒的地方。</div>
+
+  <h4>為什麼自己好用不算數</h4>
+  <div>自己用自己建的 skill，你知道怎麼繞開弱點：問什麼、給什麼檔、答案該長怎樣。同事沒有這些——措辭略不同、輸入略不同、或撞上「不常見但真實」的邊角案例，skill 就在那裡跌倒，而使用的人不知道為什麼。</div>
+
+  <h4>eval 迴圈怎麼跑</h4>
+  <div class="flow">
+    <div class="fstep"><b>skill-creator 出題</b>用 skill-creator 建 skill 時，它會生出兩個以上真實 prompt，每題產出<b>一對輸出</b>：用你的 skill 一份、不用 skill 一份。</div>
+    <div class="fstep"><b>並排比對</b>第二份是對照組——不只看「這份可以嗎」，而是「<b>這份有沒有比 Claude 原本自己做的更好</b>」。</div>
+    <div class="fstep"><b>白話回饋</b>兩個問題：skill 版是我會實際送出的那份嗎？（是→記下好在哪，讓它保持）不是→缺什麼、偏什麼，講具體——「語氣太正式」「跳過了執行摘要」有東西可改；「不太對」沒有。</div>
+    <div class="fstep"><b>Claude 改、你重跑</b>提交回饋後 Claude 更新 skill（改指示、調範例、收斂輸入），同題再跑一次看有沒有改到位。</div>
+  </div>
+
+  <h4>迭代原則</h4>
+  <div><b>一次改一件事</b>——太囉嗦和缺章節同時出現時，先修更重要的那個，重跑，再回來修下一個，才知道是什麼真的起了作用。多數 skill 一兩輪就緒。<b>出貨門檻不是完美</b>：是你在乎的案例明顯優於 baseline，加上你說得出「哪些案例還沒處理」。第一輪就漂亮？完工——eval 是為了信心，不是儀式。</div>
+
+  <div class="tip">💡 現成的練習對象：我們的 course-notes-site skill 還沒跑過正式 eval——找個新課程當測試題，照這課的迴圈走一輪，是把這課學進肌肉的最快方式。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 為什麼每題要附一份「不用 skill」的輸出？</summary>
+    <div class="dbody">當對照組——證明 skill 真的有加值，而不只是「輸出還行」。比的是相對 baseline 的差距。</div></details>
+  <details><summary>Q2 · 有用的回饋長什麼樣？</summary>
+    <div class="dbody">具體到可以動手：「語氣太正式」「跳過執行摘要」。「不太對」給不了 Claude 任何可改的東西。</div></details>
+</div>
+`;
+
+const N_SHARE = `
+<div class="note">
+  <div class="big">🚀 <b>一句話抓住這課：</b>從「我好用」到「全隊好用」的路：通過 eval 的 skills 打包成 plugin，交給公司<b>私有 marketplace</b> 的管理者發佈。之後更新從維護者流向所有人——不再逐台筆電複製貼上、祈禱同步。</div>
+
+  <h4>發佈時的四個層級</h4>
+  <table>
+    <tr><th>層級</th><th>意思</th><th>適合</th></tr>
+    <tr><td>Available</td><td>出現在公司 Directory，想裝的人自己裝</td><td>多數團隊 plugin</td></tr>
+    <tr><td>Installed by default</td><td>打開 Cowork 就已經在，可自行關閉</td><td>希望大家預設就有的工具</td></tr>
+    <tr><td>Required</td><td>必裝且常開</td><td>合規檢查這類「所有人必須同一套跑法」的工作</td></tr>
+    <tr><td>Hidden</td><td>在 marketplace 但不出現在 Directory</td><td>暫存（staging）或限定範圍的發佈</td></tr>
+  </table>
+  <div>從同事的座位看：plugin 出現在 Directory、標示來自你們公司，跟公開的 Anthropic plugin 並列。能用、能關（除非 required），但<b>不能改</b>——更新只從維護者流出。</div>
+
+  <h4>你的處境對應的下一步</h4>
+  <details><summary>A · marketplace 存在且知道管理人</summary>
+    <div class="dbody">路已經鋪好，你的工作是<b>交接不是架設</b>：把 plugin 帶給管理者（team lead、enablement、IT），說明給誰用、該用哪個層級落地。</div></details>
+  <details><summary>B · 不確定存不存在</summary>
+    <div class="dbody">先打聽——找出誰擁有（或該擁有）marketplace。這個「找到人」本身就是你的真實下一步。</div></details>
+  <details><summary>C · 你就是 admin</summary>
+    <div class="dbody">把 marketplace 開起來，決定第一批上架的 plugin 和各自的層級。</div></details>
+
+  <h4>讓共享 plugin 不走味的四個習慣</h4>
+  <table>
+    <tr><th>習慣</th><th>為什麼</th></tr>
+    <tr><td>一位掛名 owner</td><td>審變更、改完跑 eval、決定何時更新或退役——有人負責才不會悄悄過期</td></tr>
+    <tr><td>每次發佈前跑 eval</td><td>eval 迴圈就是門——在乎的案例改完撐不住，就不推給全隊</td></tr>
+    <tr><td>命名要具體</td><td>「meeting-prep」會跟公司目錄裡另外三個撞名；「sales-customer-renewal-prep」不會</td></tr>
+    <tr><td>設審視節奏</td><td>季度起步：看裝了什麼、真的在用什麼、什麼過期了——退役沒人跑的、改良有回饋的</td></tr>
+  </table>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 四個發佈層級？</summary>
+    <div class="dbody">Available（自由裝）、Installed by default（預裝可關）、Required（必裝常開）、Hidden（不上目錄的暫存或限定發佈）。</div></details>
+  <details><summary>Q2 · 同事能編輯裝到的公司 plugin 嗎？</summary>
+    <div class="dbody">不能——用與關可以（required 除外），修改只能由維護者做，更新自動流向大家。</div></details>
+</div>
+`;
+
+const N_WRAP = `
+<div class="note">
+  <div class="big">🎓 <b>一句話抓住整門課：</b>Cowork 超越聊天——<b>把真實工作交辦出去，拿回一份完成的交付物</b>。其他一切（脈絡、skills、plugins、平面、安全）都建立在這句話上。</div>
+
+  <h4>四個模組回顧</h4>
+  <table>
+    <tr><th>模組</th><th>給了你什麼</th></tr>
+    <tr><td>01 認識 Cowork</td><td>Cowork 是什麼、和 Chat／Code 的分工、適合的工作形狀、第一件真實交辦</td></tr>
+    <tr><td>02 變成你的</td><td>全域指示、projects、skills、plugins——它知道你所知、能用你所用、照你們的做法做事之後，能力翻了幾倍</td></tr>
+    <tr><td>03 隨處工作</td><td>瀏覽器裡的 Claude in Chrome、Word／Excel／PPT／Outlook 裡的 Claude in M365</td></tr>
+    <tr><td>04 安全與共享</td><td>負責任地與自主性共事、驗證你建的東西、把個人工作流變成團隊基礎設施</td></tr>
+  </table>
+
+  <h4>本週五選一</h4>
+  <div class="flow">
+    <div class="fstep"><b>設 memory</b>寫五句話的全域指示，或為一條進行中的工作流開 project。</div>
+    <div class="fstep"><b>排程或上雲</b>把一份週期交付物放上 cadence；或開通雲端 Cowork，下次下班路上想到事就能直接交辦。</div>
+    <div class="fstep"><b>裝一個 plugin</b>Customize → Plugins，裝最貼近你職務的那個，跑這週真實版本的工作。</div>
+    <div class="fstep"><b>試 Chrome 或 M365</b>挑真實工作最常發生的平面，裝起來用在一件事上。</div>
+    <div class="fstep"><b>分享你建的</b>一個好用例、一條出好結果的工作流、一個 skill——你可能就是同事需要的那個解鎖。</div>
+  </div>
+
+  <h4>之後去哪裡</h4>
+  <table>
+    <tr><th>路徑</th><th>內容</th></tr>
+    <tr><td>AI Fluency: Framework &amp; Foundations</td><td>與 AI 高效協作的基本功——prompting、評估輸出、判斷 AI 是不是對的工具</td></tr>
+    <tr><td>AI Capabilities and Limitations</td><td>生成式 AI 能力的深度巡禮，跨模態與平面</td></tr>
+    <tr><td>Claude 101</td><td>姊妹課：跨所有平面使用 Claude</td></tr>
+    <tr><td>Claude use-case library</td><td>篩選 Cowork 分類，找下一個交辦靈感</td></tr>
+  </table>
+  <div class="tip">💡 你已完成 AI Fluency 的小事業版——Framework &amp; Foundations 是它的深度版，很適合當第四門筆記站。</div>
+
+  <h4>自我檢核（先想再點開）</h4>
+  <details><summary>Q1 · 整門課的 throughline 是哪一句？</summary>
+    <div class="dbody">超越聊天，交辦真實工作、拿回完成的交付物——其餘所有能力都是為了讓這件事更好、更安全、規模更大。</div></details>
+</div>
+`;
+
+/* ══════════ 模組資料 ══════════ */
+const MODULES = {
+  m1: {
+    sec: "MOD 01 · MEET CLAUDE COWORK", zh: "認識 Cowork",
+    lede: "迎新區：先搞懂這位新同事是誰、把環境設好、認出適合交給它的工作形狀，然後真的交辦第一件。",
+    lessons: [
+      { en:"What is Claude Cowork", zh:"Cowork 是什麼", mins:"8 分鐘", notes: N_WHAT },
+      { en:"Setting up Claude Cowork", zh:"完成設定", mins:"8 分鐘", notes: N_SETUP },
+      { en:"What Claude Cowork can do for you", zh:"它能為你做什麼", mins:"11 分鐘", notes: N_PATTERNS },
+      { en:"Hand Claude Cowork your first task", zh:"交辦第一件工作", mins:"15 分鐘", notes: N_FIRST },
+    ]
+  },
+  m2: {
+    sec: "MOD 02 · MAKE IT YOURS", zh: "變成你的",
+    lede: "客製工作台：四塊積木——全域指示、projects、skills、plugins——各學一種知識、彼此相乘。",
+    lessons: [
+      { en:"Get better results faster", zh:"更快拿到更好的結果", mins:"5 分鐘", notes: N_FOUR },
+      { en:"Standing context: Global instructions and projects", zh:"常備脈絡：全域指示與 Projects", mins:"7 分鐘", notes: N_CONTEXT },
+      { en:"Skills: Teach Claude Cowork your way", zh:"Skills：教它你的做法", mins:"12 分鐘", notes: N_SKILLS },
+      { en:"Plugins: Encode your team's expertise", zh:"Plugins：封裝團隊的專業", mins:"12 分鐘", notes: N_PLUGINS },
+    ]
+  },
+  m3: {
+    sec: "MOD 03 · WHEREVER YOU WORK", zh: "隨處工作",
+    lede: "外勤區：工作不是只發生在桌面 app——瀏覽器裡有 Claude in Chrome，Office 文件裡有 Claude in M365。",
+    lessons: [
+      { en:"Claude in Chrome", zh:"瀏覽器裡的 Claude", mins:"10 分鐘", notes: N_CHROME },
+      { en:"Claude for Microsoft 365", zh:"文件裡的 Claude", mins:"5 分鐘", notes: N_M365 },
+    ]
+  },
+  m4: {
+    sec: "MOD 04 · SHARING AND SAFETY", zh: "安全與共享",
+    lede: "安全與共享室：疊在系統護欄之上的預防動作、用 eval 驗證你建的東西、再透過公司 marketplace 分給全隊。",
+    lessons: [
+      { en:"Best practices for working safely", zh:"安全共事的最佳實務", mins:"8 分鐘", notes: N_SAFE },
+      { en:"Validating skills for plugins", zh:"用 eval 驗證 skills", mins:"8 分鐘", notes: N_EVAL },
+      { en:"Share what you build with your team", zh:"把你建的分享給團隊", mins:"7 分鐘", notes: N_SHARE },
+    ]
+  },
+  m5: {
+    sec: "MOD 05 · WRAP UP", zh: "收尾",
+    lede: "出口：回顧整條入職路線、挑一件本週就做的事，然後做測驗拿證書。",
+    lessons: [
+      { en:"Wrap up and next steps", zh:"收束與下一步", mins:"5 分鐘", notes: N_WRAP },
+      { en:"Quiz on Claude Cowork", zh:"課程測驗", mins:"完課驗收", notes: "<div class='note'><div class='big'>✅ 完成所有模組後作答。答錯的觀念可以記在這裡，回頭補對應課程的筆記。</div></div>" },
+    ]
+  }
+};
+
+/* ══════════ 渲染 ══════════ */
+for (const [id, m] of Object.entries(MODULES)) {
+  const page = document.getElementById("page-" + id);
+  page.innerHTML = `
+    <div class="kicker">${m.sec}</div>
+    <h2>${m.zh}</h2>
+    <p class="lede">${m.lede}</p>
+    ${m.lessons.map((l,i)=>`
+      <div class="lesson" id="${id}-l${i}">
+        <div class="lesson-hd" data-toggle="${id}-l${i}">
+          <input type="checkbox" class="lswitch" data-done="${id}-l${i}" aria-label="標記完成" onclick="event.stopPropagation()">
+          <div class="ltitle">
+            <div class="en">${l.en}</div>
+            <div class="zh">${l.zh}</div>
+            <div class="mins">⏱ ${l.mins}</div>
+          </div>
+          <span class="chip todo" id="chip-${id}-l${i}">待學習</span>
+          <span class="arr">▾</span>
+        </div>
+        <div class="lesson-bd">${l.notes}</div>
+      </div>`).join("")}
+  `;
+}
+
+function goto(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.page===id));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("on", p.id==="page-"+id));
+  window.scrollTo({top:0});
+}
+document.querySelectorAll("[data-page]").forEach(el=>{
+  el.addEventListener("click", ()=>goto(el.dataset.page));
+  el.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" ") goto(el.dataset.page); });
+});
+document.addEventListener("click", e=>{
+  const hd = e.target.closest(".lesson-hd");
+  if(hd) document.getElementById(hd.dataset.toggle).classList.toggle("open");
+});
+let done = 0;
+document.addEventListener("change", e=>{
+  if(!e.target.matches("[data-done]")) return;
+  const chip = document.getElementById("chip-" + e.target.dataset.done);
+  const on = e.target.checked;
+  chip.textContent = on ? "已完成" : "待學習";
+  chip.className = "chip " + (on ? "done" : "todo");
+  done += on ? 1 : -1;
+  document.getElementById("stat-done").textContent = done;
+});
+</script>
+</body>
+</html>
